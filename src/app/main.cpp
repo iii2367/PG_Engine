@@ -1,19 +1,24 @@
-#include "../adapters/WindowSDL/WindowSDL.h"
-#include <iostream>
+#include "../ports/WindowPort/WindowPort.h"
+#include "../utils/ModuleDLL.h"
+#include <cstdio>
 
-int main() {
+int main(int argc, char *argv[]) {
+
+  puts("Utils");
+  Utils::Module<IWindowPort> win;
+  win.load("WindowSDL/WindowSDL.dll", "getClass", "destroyClass");
+  puts("Config");
   WindowConfig wConfig;
   wConfig.height = 640;
   wConfig.width = 800;
   wConfig.title = "SDL3";
-
-  SDL2WindowAdapter SDL3;
-
-  SDL3.CreateWindow(wConfig);
-
-  while (SDL3.PollEvents()) {
-    SDL3.RenderFrame();
+  puts("main program");
+  win.getInstance()->createWindow(wConfig);
+  puts("cycle");
+  while (win.getInstance()->PollEvents()) {
+    win.getInstance()->RenderFrame();
   }
-
-  SDL3.CloseWindow();
+  puts("CloseWindow");
+  win.getInstance()->CloseWindow();
+  win.unload();
 }

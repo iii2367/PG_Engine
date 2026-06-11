@@ -1,9 +1,6 @@
 #ifndef WINDOWPORT
 #define WINDOWPORT
 
-WINDOWPORT
-#define WINDOWPORT
-
 #include <string>
 
 struct WindowConfig {
@@ -16,7 +13,7 @@ struct IWindowPort {
   virtual ~IWindowPort() = default;
 
   // Створення вікна
-  virtual void CreateWindow(const WindowConfig &config) = 0;
+  virtual void createWindow(const WindowConfig &config) = 0;
 
   // Основний цикл рендерингу
   virtual void RenderFrame() = 0;
