@@ -1,0 +1,14 @@
+[
+{
+  "directory": "F:/source/PG_Engine/build/Debug",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang++.exe -DUNICODE -D_UNICODE -IF:/source/PG_Engine/src/utils -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @CMakeFiles\\PG_Engine.dir\\src\\app\\main.cpp.obj.modmap -o CMakeFiles\\PG_Engine.dir\\src\\app\\main.cpp.obj -c F:\\source\\PG_Engine\\src\\app\\main.cpp",
+  "file": "F:/source/PG_Engine/src/app/main.cpp",
+  "output": "F:/source/PG_Engine/build/Debug/CMakeFiles/PG_Engine.dir/src/app/main.cpp.obj"
+},
+{
+  "directory": "F:/source/PG_Engine/build/Debug",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang++.exe -DUNICODE -DWindowSDL_EXPORTS -D_UNICODE -isystem F:/source/PG_Engine/lib/SDL3/include -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @src\\adapters\\WindowSDL\\CMakeFiles\\WindowSDL.dir\\WindowSDL.cpp.obj.modmap -o src\\adapters\\WindowSDL\\CMakeFiles\\WindowSDL.dir\\WindowSDL.cpp.obj -c F:\\source\\PG_Engine\\src\\adapters\\WindowSDL\\WindowSDL.cpp",
+  "file": "F:/source/PG_Engine/src/adapters/WindowSDL/WindowSDL.cpp",
+  "output": "F:/source/PG_Engine/build/Debug/src/adapters/WindowSDL/CMakeFiles/WindowSDL.dir/WindowSDL.cpp.obj"
+}
+]

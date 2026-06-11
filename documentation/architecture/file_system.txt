@@ -1,0 +1,33 @@
+/src
+    /app/       --  програма для створення сцен в реалтаймі
+        /window/            --  вікна та інтерфейс
+    /engine/    --  клас котрий надає управління грі обєктами core
+    /core
+        /ecs                -- сутності, компоненти, системи
+            /entities/      -- опис сутностей (ID, набір компонентів)
+            /components/    -- опис можливостей (позиція, здоров’я, графіка)
+            /systems/       -- логіка поведінки (рух, бій, AI)
+        /scene/             -- управління сценами
+        /render/            -- графіка (API ядра)
+        /physics/           -- фізика (API ядра)
+        /audio/             -- аудіо (API ядра)
+        /input/             -- api вводу
+        /resources/         -- менеджери ресурсів
+    /adapters
+        /graphics/          -- низькорівнева реалізація (OpenGL/Vulkan)
+        /physics/           -- низькорівнева реалізація (Bullet/PhysX)
+        /audio/             -- низькорівнева реалізація (OpenAL/FM0D)
+        /input/             -- реалізація вводу (клавіатура, миша, геймпад)
+    /ports
+        /graphics_interface/ -- інтерфейси для адаптерів
+        /physics_interface/
+        /audio_interface/
+        /input_interface/
+    /tests                  -- юніт-тести ядра
+
+/game_app
+    /assets/                -- ресурси гри
+    /scenes/                -- сцени гри
+    /scripts/               -- логіка гри
+
+

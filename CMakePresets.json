@@ -1,0 +1,54 @@
+{
+    "version": 4,
+
+   "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 0,
+    "patch": 1
+  },
+
+  "configurePresets": [
+    {
+      "name": "debug-clang",
+      "displayName": "Debug build with Clang and Ninja",
+      "description": "Debug configuration using Clang and Ninja generator",
+      "generator": "Ninja",       
+      "binaryDir": "${sourceDir}/build/Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug", 
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON", 
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_PREFIX_PATH": "${sourceDir}/lib/SDL3"
+      }
+    },
+    {
+      "name": "release-clang",
+      "displayName": "Release build with Clang and Ninja",
+      "description": "Release configuration using Clang and Ninja generator",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_PREFIX_PATH": "${sourceDir}/lib/SDL3"
+      }
+    }
+  ],
+
+  "buildPresets": [
+    {
+      "name": "build-debug-clang",
+      "configurePreset": "debug-clang", 
+      "description": "Build using Ninja",
+      "jobs": 8 
+    },
+    {
+      "name": "build-release-clang",
+      "configurePreset": "release-clang",
+      "description": "Build release with Ninja",
+      "jobs": 8
+    }
+  ]
+}
+
