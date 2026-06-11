@@ -1,15 +1,18 @@
-#include <SDL3/SDL.h>
+#ifndef WINDOWPORT
+#define WINDOWPORT
+
+WINDOWPORT
+#define WINDOWPORT
+
 #include <string>
 
 struct WindowConfig {
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
   std::string title;
 };
 
-class IWindowPort {
-
-public:
+struct IWindowPort {
   virtual ~IWindowPort() = default;
 
   // Створення вікна
@@ -24,3 +27,5 @@ public:
   // Закриття вікна
   virtual void CloseWindow() = 0;
 };
+
+#endif // WINDOWPORT-макрос
