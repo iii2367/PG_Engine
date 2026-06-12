@@ -7,8 +7,8 @@
 },
 {
   "directory": "C:/programs/VisualStudio/consoleProgs/PG_Engine/build/Debug",
-  "command": "C:\\Users\\phoen\\scoop\\apps\\llvm\\current\\bin\\clang++.exe -DUNICODE -DWindowSDL_EXPORTS -D_UNICODE -isystem C:/programs/VisualStudio/consoleProgs/PG_Engine/lib/SDL3/include -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @src\\adapters\\WindowSDL\\CMakeFiles\\WindowSDL.dir\\WindowSDL.cpp.obj.modmap -o src\\adapters\\WindowSDL\\CMakeFiles\\WindowSDL.dir\\WindowSDL.cpp.obj -c C:\\programs\\VisualStudio\\consoleProgs\\PG_Engine\\src\\adapters\\WindowSDL\\WindowSDL.cpp",
-  "file": "C:/programs/VisualStudio/consoleProgs/PG_Engine/src/adapters/WindowSDL/WindowSDL.cpp",
-  "output": "C:/programs/VisualStudio/consoleProgs/PG_Engine/build/Debug/src/adapters/WindowSDL/CMakeFiles/WindowSDL.dir/WindowSDL.cpp.obj"
+  "command": "C:\\Users\\phoen\\scoop\\apps\\llvm\\current\\bin\\clang++.exe -DUNICODE -DWindowSDL3Adapter_EXPORTS -D_UNICODE -isystem C:/programs/VisualStudio/consoleProgs/PG_Engine/lib/SDL3/include -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @src\\adapters\\WindowSDL3Adapter\\CMakeFiles\\WindowSDL3Adapter.dir\\WindowSDL3Adapter.cpp.obj.modmap -o src\\adapters\\WindowSDL3Adapter\\CMakeFiles\\WindowSDL3Adapter.dir\\WindowSDL3Adapter.cpp.obj -c C:\\programs\\VisualStudio\\consoleProgs\\PG_Engine\\src\\adapters\\WindowSDL3Adapter\\WindowSDL3Adapter.cpp",
+  "file": "C:/programs/VisualStudio/consoleProgs/PG_Engine/src/adapters/WindowSDL3Adapter/WindowSDL3Adapter.cpp",
+  "output": "C:/programs/VisualStudio/consoleProgs/PG_Engine/build/Debug/src/adapters/WindowSDL3Adapter/CMakeFiles/WindowSDL3Adapter.dir/WindowSDL3Adapter.cpp.obj"
 }
 ]

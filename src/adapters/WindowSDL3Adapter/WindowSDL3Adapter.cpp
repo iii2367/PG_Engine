@@ -1,8 +1,7 @@
-#include "WindowSDL.h"
+#include "WindowSDL3Adapter.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
-#include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
@@ -26,10 +25,7 @@ void WindowSDL::createWindow(const WindowConfig &config) {
 void WindowSDL::RenderFrame() {
   SDL_SetRenderDrawColor(render, 0, 0, 128, 255);
   SDL_RenderClear(render);
-  SDL_FRect rect = {320.0f, 50.0f, 100.0f, 100.0f};
   // как я понял, тут отрисовка должна быть, судя по документации
-  SDL_SetRenderDrawColor(render, 255, 255, 255, 255);
-  SDL_RenderFillRect(render, &rect);
   SDL_RenderPresent(render);
 }
 
