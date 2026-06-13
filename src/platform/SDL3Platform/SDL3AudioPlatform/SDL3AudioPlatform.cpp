@@ -1,8 +1,6 @@
 #include "SDL3AudioPlatform.h"
 
-#include <iostream>
 #include <SDL3/SDL.h>
-//#include <SDL3/SDL_main.h>
 #include <SDL3_mixer/SDL_mixer.h>
 
 // https://github.com/libsdl-org/SDL/blob/main/examples/audio/01-simple-playback/simple-playback.c
@@ -13,33 +11,18 @@ SDL3AudioPlatform::~SDL3AudioPlatform()
 
 bool SDL3AudioPlatform::initAudio()
 {
-    if (!SDL_Init(SDL_INIT_AUDIO))
-    {
-puts("1");
-        return false;
-    }
+    if (!MIX_Init()) { return false; }
+    mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
 
-    if (!MIX_Init()) { puts("2"); return false; }
+    if (!mixer) { return false; }
 
-    SDL_AudioSpec spec{};
-    spec.freq = 48000;
-    spec.format = SDL_AUDIO_F32;
-    spec.channels = 2;
-    mixer = MIX_CreateMixer(&spec);
-
-    if (!mixer) { puts("3"); MIX_Quit();
-        SDL_Quit();
- return false; }
-
-    // створюємо пул треків
     for (int i = 0; i < 32; i++)
     {
-        MIX_Track* t = MIX_CreateTrack(mixer);
+        auto* t = MIX_CreateTrack(mixer);
         tracks.push_back(t);
     }
 
     MIX_SetMixerGain(mixer, m_volume);
-
     return true;
 }
     
@@ -53,8 +36,16 @@ void SDL3AudioPlatform::playSound(std::string filePath)
     MIX_Track* track = getFreeTrack();
     if (!track) { return; }
 
-    MIX_SetTrackAudio(track, audio);
-    MIX_PlayTrack(track, 0);
+    if (!MIX_SetTrackAudio(track, audio))
+    {
+        puts("SetTrackAudio failed");
+        return;
+    }
+
+    if (!MIX_PlayTrack(track, 0))
+    {
+        puts("PlayTrack failed");
+    }
 }
 
 void SDL3AudioPlatform::stopAllSounds()
@@ -84,7 +75,8 @@ MIX_Track* SDL3AudioPlatform::getFreeTrack()
 {
     for (auto* t : tracks)
     {
-        if (!MIX_TrackPlaying(t)) { return t; }
+        if (!MIX_TrackPlaying(t) && !MIX_TrackPaused(t)) { return t; }
+        //if (!MIX_TrackPlaying(t)) { return t; }
     }
     return nullptr;
 }

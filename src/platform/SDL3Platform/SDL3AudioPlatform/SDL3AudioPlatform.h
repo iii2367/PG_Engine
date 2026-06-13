@@ -20,10 +20,7 @@ public:
 private:
     MIX_Mixer* mixer;
     
-    // Audio cache (file -> decoded audio)
     std::unordered_map<std::string, MIX_Audio*> audioCache;
-
-    // Track pool (channels)
     std::vector<MIX_Track*> tracks;
 
     float m_volume = 1.0f;
