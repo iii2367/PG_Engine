@@ -39,8 +39,9 @@ int main(int argc, char *argv[]) {
 
     // Робимо підписку на подію PG_Key_Down_W і якщо вона спрацьовує то
     // викликається лямбда функція
-    dispatcher.subscribe(EventType::PG_Key_Down_S,
-                         [](const Event &e) { std::cout << "S is pressed\n"; });
+    dispatcher.subscribe(EventType::PG_Key_Down_LSHFT, [](const Event &e) {
+      std::cout << "LSHIFT is pressed\n";
+    });
     dispatcher.subscribe(EventType::PG_Mouse_Move, [](const Event &e) {
       std::cout << "x: " << e.x << " y: " << e.y << "\n";
     });
