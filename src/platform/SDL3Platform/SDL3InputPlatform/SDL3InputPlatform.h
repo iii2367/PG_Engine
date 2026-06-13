@@ -5,14 +5,13 @@
 #include "../../IInputPlatform.h"
 
 #include <SDL3/SDL.h>
-class SDL3InputPlatform : public IInputPlatform
-{
+class SDL3InputPlatform : public IInputPlatform {
 public:
-    bool pollEvents(EventDispatcher& dispatcher) override;
+  bool pollEvents(EventDispatcher &dispatcher) override;
 
-    bool isKeyPressed(int keyCode) override;
-    bool isMouseButtonPressed(int button) override;
-    void getMousePosition(int& x, int& y) override;
+  bool isKeyPressed(int keyCode) override;
+  bool isMouseButtonPressed(int button) override;
+  void getMousePosition(float &x, float &y) override;
 };
 
 #endif
