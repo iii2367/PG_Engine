@@ -7,7 +7,7 @@ class SDL3BasePlatform : public IBasePlatform
 {
 public:
     bool init() override;
-    void update() override;
+    void update(int ms) override;
     void shutdown() override;
 };
 

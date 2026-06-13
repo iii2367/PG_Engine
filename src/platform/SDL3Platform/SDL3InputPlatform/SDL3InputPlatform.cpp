@@ -4,7 +4,6 @@
 
 bool SDL3InputPlatform::pollEvents(EventDispatcher& dispatcher)
 {
-    // Обробка івентів покищо тільки закриття вікна пізніше реалізуємо підписку подій
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {

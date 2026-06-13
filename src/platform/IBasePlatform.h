@@ -6,7 +6,7 @@ struct IBasePlatform
     virtual ~IBasePlatform() = default;
 
     virtual bool init() = 0;
-    virtual void update() = 0;
+    virtual void update(int ms) = 0;
     virtual void shutdown() = 0;
 };
 

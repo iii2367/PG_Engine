@@ -1,4 +1,3 @@
-#include "../ports/WindowPort/WindowPort.h"
 #include "../utils/Module.h"
 #include <cstdio>
 #include <iostream>
@@ -7,35 +6,41 @@
 #include "../core/EventDispatcher/EventDispatcher.h"
 #include "../platform/IPlatform.h"
 
-int main(int argc, char *argv[]) {
-  try {
-        // Завантаження потрібної dll
-        Utils::Module<IPlatform> platform;
-        platform.load("SDL3Platform.dll", "getClass", "destroyClass");
-puts("1");
-         
-        // Запуск ініціації платформи
-        if (!platform.getInstance()->getBase()->init()) { throw std::runtime_error("failed to init base"); }
-puts("1.5");
-        // Створення вікна платформи
-        platform.getInstance()->getWindow()->createWindow(800, 600, "window");
-puts("2");
-        // створення dispatcher для підписки подій (покищо невикористовується але потрібен)
-        EventDispatcher dispatcher;
-        bool running = true;
-puts("3");
-        while (running)
-        {
-puts("4");
-            platform.getInstance()->getBase()->update(); // зупинка виконнання програми
-            running = platform.getInstance()->getInput()->pollEvents(dispatcher); // оброботка івентів
-            platform.getInstance()->getWindow()->renderFrame(); // рендер зображення вікна
+int main(int argc, char *argv[])
+{
+  try
+  { 
+    Utils::Module<IPlatform> platform; // Створення обгортки над класом з dll :: <Інтерфейс_обєкта>
 
-        }
-puts("5");
-        platform.getInstance()->getWindow()->destroyWindow(); // знищення вікна
-        platform.getInstance()->getBase()->shutdown(); // знищення бази платформи
-puts("6");
+    // Завантаження класу з dll :: функція отримує такі аргументи dllPath - шлях до dll :: createName - імя функції яка повертає вказівни на клас :: destroyName - імя функції яка знищує клас
+    platform.load("SDL3Platform.dll", "getClass", "destroyClass"); // Завантаження класу з dll :: функція отримує такі аргументи dllPath - шлях до dll
+
+
+    // Звернення до методів класу який був в dll :: створення під обєктів платформи
+    platform->createBasePlatform();
+    platform->createWindowPlatform();
+    platform->createInputPlatform();
+
+    // Ініціація платформи
+    if (!platform->getBase()->init()) { throw std::runtime_error("failed to init base."); }
+
+    // Створення вікна Платформи
+    platform->getWindow()->createWindow(800, 600, "SDL3");
+ 
+    // створення dispatcher для підписки подій (покищо невикористовується але потрібен)
+    EventDispatcher dispatcher;
+ 
+    bool running = true;
+
+    while (running)
+    {
+      platform.getInstance()->getBase()->update(16); // зупинка виконнання програми
+      running = platform.getInstance()->getInput()->pollEvents(dispatcher); // обробробка івентів
+      platform.getInstance()->getWindow()->renderFrame(); // рендер зображення вікна
+    }
+
+    platform->getWindow()->destroyWindow(); // знищення вікна
+    platform->getBase()->shutdown(); // знищення бази платформи
 
   } catch (std::runtime_error &e) {
     std::cout << e.what() << std::endl;

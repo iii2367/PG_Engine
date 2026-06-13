@@ -2,3 +2,4 @@
 lib/
 build/
 Session.vim
+compile_commands.json
