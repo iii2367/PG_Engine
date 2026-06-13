@@ -13,6 +13,12 @@
 },
 {
   "directory": "F:/source/PG_Engine/build/Debug",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang++.exe -DSDL3Platform_EXPORTS -DUNICODE -D_UNICODE -isystem F:/source/PG_Engine/lib/SDL3/include -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\__\\__\\core\\EventDispatcher\\EventDispatcher.cpp.obj.modmap -o src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\__\\__\\core\\EventDispatcher\\EventDispatcher.cpp.obj -c F:\\source\\PG_Engine\\src\\core\\EventDispatcher\\EventDispatcher.cpp",
+  "file": "F:/source/PG_Engine/src/core/EventDispatcher/EventDispatcher.cpp",
+  "output": "F:/source/PG_Engine/build/Debug/src/platform/SDL3Platform/CMakeFiles/SDL3Platform.dir/__/__/core/EventDispatcher/EventDispatcher.cpp.obj"
+},
+{
+  "directory": "F:/source/PG_Engine/build/Debug",
   "command": "C:\\PROGRA~1\\LLVM\\bin\\clang++.exe -DSDL3Platform_EXPORTS -DUNICODE -D_UNICODE -isystem F:/source/PG_Engine/lib/SDL3/include -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\SDL3Platform.cpp.obj.modmap -o src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\SDL3Platform.cpp.obj -c F:\\source\\PG_Engine\\src\\platform\\SDL3Platform\\SDL3Platform.cpp",
   "file": "F:/source/PG_Engine/src/platform/SDL3Platform/SDL3Platform.cpp",
   "output": "F:/source/PG_Engine/build/Debug/src/platform/SDL3Platform/CMakeFiles/SDL3Platform.dir/SDL3Platform.cpp.obj"

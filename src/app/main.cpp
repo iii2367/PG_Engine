@@ -29,6 +29,9 @@ int main(int argc, char *argv[])
  
     // створення dispatcher для підписки подій (покищо невикористовується але потрібен)
     EventDispatcher dispatcher;
+
+    // Робимо підписку на подію KeyDown і якщо вона спрацьовує то викликається лямда функція
+    dispatcher.subscribe(EventType::KeyDown, [](const Event& e){ std::cout << "KeyDown" << std::endl; });
  
     bool running = true;
 
@@ -37,6 +40,8 @@ int main(int argc, char *argv[])
       platform.getInstance()->getBase()->update(16); // зупинка виконнання програми
       running = platform.getInstance()->getInput()->pollEvents(dispatcher); // обробробка івентів
       platform.getInstance()->getWindow()->renderFrame(); // рендер зображення вікна
+
+      
     }
 
     platform->getWindow()->destroyWindow(); // знищення вікна

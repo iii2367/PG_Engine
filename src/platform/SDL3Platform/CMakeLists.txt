@@ -5,6 +5,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/lib")
 
 add_library(SDL3Platform SHARED 
+    ../../core/EventDispatcher/EventDispatcher.cpp
     SDL3Platform.cpp
     SDL3BasePlatform/SDL3BasePlatform.cpp
     SDL3WindowPlatform/SDL3WindowPlatform.cpp

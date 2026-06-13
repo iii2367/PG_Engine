@@ -1,6 +1,7 @@
 #include "SDL3InputPlatform.h"
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_events.h>
 
 bool SDL3InputPlatform::pollEvents(EventDispatcher& dispatcher)
 {
@@ -11,6 +12,11 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher& dispatcher)
         switch (event.type)
         {
             case SDL_EVENT_QUIT: { return false; }
+            case SDL_EVENT_KEY_DOWN: // Наш івент якщо кнопка натистута
+            {
+                e.type = EventType::KeyDown; // Ми перекладаємо івент на наш 
+                dispatcher.dispatch(e);  // і запускаємо обробку події якщо є підписка то вона спрацює
+            }
         }
     }
     return true;
