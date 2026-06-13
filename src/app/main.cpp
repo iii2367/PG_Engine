@@ -25,10 +25,12 @@ int main(int argc, char *argv[])
     // Ініціація платформи
     if (!platform->getBase()->init()) { throw std::runtime_error("failed to init base."); }
     if (!platform->getAudio()->initAudio()) { throw std::runtime_error("failed to init audio."); }
-
-    // Запуск Аудіо
-    platform->getAudio()->playSound("music/Test.wav");
-    platform->getAudio()->playSound("music/Test2.wav");    
+    
+    int idTex = platform->getAudio()->playSound("music/Test.wav");
+    int idDrag = platform->getAudio()->playSound("music/Test2.wav");  
+    int idT = platform->getAudio()->playSound("music/Test3.wav");
+    bool isPause = 0;
+    std::cout << idTex << " " << idDrag << " " << idT << std::endl;
 
     // Створення вікна Платформи
     platform->getWindow()->createWindow(800, 600, "SDL3");
@@ -37,7 +39,12 @@ int main(int argc, char *argv[])
     EventDispatcher dispatcher;
 
     // Робимо підписку на подію KeyDown і якщо вона спрацьовує то викликається лямда функція
-    dispatcher.subscribe(EventType::KeyDown, [](const Event& e){ std::cout << "KeyDown" << std::endl; });
+    dispatcher.subscribe(EventType::KeyDown, [&](const Event& e)
+    {
+        std::cout << "KeyDown" << std::endl; 
+        if (!isPause) { isPause = 1; platform->getAudio()->pause(idTex); platform->getAudio()->pause(idDrag); platform->getAudio()->pause(idT);} 
+        else { isPause = 0; platform->getAudio()->resume(idTex); platform->getAudio()->resume(idDrag); platform->getAudio()->resume(idT); }
+    });
  
     bool running = true;
 

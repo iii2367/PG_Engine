@@ -3,10 +3,9 @@
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
 
-// https://github.com/libsdl-org/SDL/blob/main/examples/audio/01-simple-playback/simple-playback.c
 SDL3AudioPlatform::~SDL3AudioPlatform()
 {
-    cleanup();
+    
 }
 
 bool SDL3AudioPlatform::initAudio()
@@ -18,39 +17,90 @@ bool SDL3AudioPlatform::initAudio()
 
     for (int i = 0; i < 32; i++)
     {
-        auto* t = MIX_CreateTrack(mixer);
-        tracks.push_back(t);
+        SoundInstance inst;
+        inst.track = MIX_CreateTrack(mixer);
+        instances.push_back(inst);
     }
 
     MIX_SetMixerGain(mixer, m_volume);
     return true;
 }
     
-void SDL3AudioPlatform::playSound(std::string filePath)
+int SDL3AudioPlatform::playSound(const std::string& filePath)
 {
-    if (!mixer) { return; }
-
     MIX_Audio* audio = loadAudio(filePath);
-    if (!audio) { return; }
+    if (!audio) { return -1; } 
 
     MIX_Track* track = getFreeTrack();
-    if (!track) { return; }
+    if (!track) { return -1; } 
 
-    if (!MIX_SetTrackAudio(track, audio))
-    {
-        puts("SetTrackAudio failed");
-        return;
-    }
+    SoundInstance* inst = nullptr;
 
-    if (!MIX_PlayTrack(track, 0))
+    for (auto& i : instances)
     {
-        puts("PlayTrack failed");
-    }
+        if (!i.active)
+        {
+            inst = &i;
+            break;
+        }
+    } 
+        
+    if (!inst) { return -1; }
+
+    inst->audio = audio;
+    inst->track = track;
+    inst->active = true;
+    inst->paused = false;
+
+    MIX_SetTrackAudio(track, audio);
+    MIX_PlayTrack(track, 0);
+
+    int handle = nextHandle++;
+    handleMap[handle] = inst;
+
+    return handle;
+}
+
+void SDL3AudioPlatform::pause(int handle)
+{
+    SoundInstance* inst = findInstance(handle);
+    if (!inst || !inst->track) { return; }
+
+    MIX_PauseTrack(inst->track);
+    inst->paused = true;
+}
+
+void SDL3AudioPlatform::resume(int handle)
+{
+    SoundInstance* inst = findInstance(handle);
+    if (!inst || !inst->track) { return; }
+
+    MIX_ResumeTrack(inst->track);
+    inst->paused = false;
+}
+
+void SDL3AudioPlatform::stop(int handle)
+{
+    SoundInstance* inst = findInstance(handle);
+    if (!inst || !inst->track) { return; }
+
+    MIX_StopTrack(inst->track, 0);
+
+    inst->active = false;
+    inst->paused = false;
+
+    handleMap.erase(handle);
 }
 
 void SDL3AudioPlatform::stopAllSounds()
 {
     if (mixer) { MIX_StopAllTracks(mixer, 0); }
+
+    for (auto& i : instances)
+    {
+        i.active = false;
+        i.paused = false;
+    }
 }
     
 void SDL3AudioPlatform::setVolume(float volume)
@@ -71,27 +121,20 @@ MIX_Audio* SDL3AudioPlatform::loadAudio(const std::string& path)
     return audio;
 }
 
-MIX_Track* SDL3AudioPlatform::getFreeTrack()
+SDL3AudioPlatform::SoundInstance* SDL3AudioPlatform::findInstance(int handle)
 {
-    for (auto* t : tracks)
-    {
-        if (!MIX_TrackPlaying(t) && !MIX_TrackPaused(t)) { return t; }
-        //if (!MIX_TrackPlaying(t)) { return t; }
-    }
-    return nullptr;
+    auto it = handleMap.find(handle);
+    if (it == handleMap.end()) { return nullptr; }
+
+    return it->second;
 }
 
-void SDL3AudioPlatform::cleanup()
+MIX_Track* SDL3AudioPlatform::getFreeTrack()
 {
-    for (auto& [k, v] : audioCache) { MIX_DestroyAudio(v); }
+    for (auto& i : instances)
+    {
+        if (!MIX_TrackPlaying(i.track) && !i.active) { return i.track; }
+    }
 
-    audioCache.clear();
-
-    for (auto* t : tracks) { MIX_DestroyTrack(t); }
-
-    tracks.clear();
-
-    if (mixer) { MIX_DestroyMixer(mixer); }
-
-    MIX_Quit();
+    return instances[0].track; 
 }
