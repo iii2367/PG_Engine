@@ -20,9 +20,12 @@ int main(int argc, char *argv[])
     platform->createBasePlatform();
     platform->createWindowPlatform();
     platform->createInputPlatform();
+    platform->createAudioPlatform();
 
     // Ініціація платформи
     if (!platform->getBase()->init()) { throw std::runtime_error("failed to init base."); }
+    if (!platform->getAudio()->initAudio()) { throw std::runtime_error("failed to init audio."); }
+    platform->getAudio()->playSound("music/Test.wav");
 
     // Створення вікна Платформи
     platform->getWindow()->createWindow(800, 600, "SDL3");
