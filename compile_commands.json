@@ -1,14 +1,38 @@
 [
 {
-  "directory": "C:/programs/VisualStudio/consoleProgs/PG_Engine/build/Debug",
-  "command": "C:\\Users\\phoen\\scoop\\apps\\llvm\\current\\bin\\clang++.exe -DUNICODE -D_UNICODE -IC:/programs/VisualStudio/consoleProgs/PG_Engine/src/utils -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @CMakeFiles\\PG_Engine.dir\\src\\app\\main.cpp.obj.modmap -o CMakeFiles\\PG_Engine.dir\\src\\app\\main.cpp.obj -c C:\\programs\\VisualStudio\\consoleProgs\\PG_Engine\\src\\app\\main.cpp",
-  "file": "C:/programs/VisualStudio/consoleProgs/PG_Engine/src/app/main.cpp",
-  "output": "C:/programs/VisualStudio/consoleProgs/PG_Engine/build/Debug/CMakeFiles/PG_Engine.dir/src/app/main.cpp.obj"
+  "directory": "F:/source/PG_Engine/build/Debug",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang++.exe -DUNICODE -D_UNICODE -IF:/source/PG_Engine/src/utils -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @CMakeFiles\\PG_Engine.dir\\src\\app\\main.cpp.obj.modmap -o CMakeFiles\\PG_Engine.dir\\src\\app\\main.cpp.obj -c F:\\source\\PG_Engine\\src\\app\\main.cpp",
+  "file": "F:/source/PG_Engine/src/app/main.cpp",
+  "output": "F:/source/PG_Engine/build/Debug/CMakeFiles/PG_Engine.dir/src/app/main.cpp.obj"
 },
 {
-  "directory": "C:/programs/VisualStudio/consoleProgs/PG_Engine/build/Debug",
-  "command": "C:\\Users\\phoen\\scoop\\apps\\llvm\\current\\bin\\clang++.exe -DUNICODE -DWindowSDL3Adapter_EXPORTS -D_UNICODE -isystem C:/programs/VisualStudio/consoleProgs/PG_Engine/lib/SDL3/include -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @src\\adapters\\WindowSDL3Adapter\\CMakeFiles\\WindowSDL3Adapter.dir\\WindowSDL3Adapter.cpp.obj.modmap -o src\\adapters\\WindowSDL3Adapter\\CMakeFiles\\WindowSDL3Adapter.dir\\WindowSDL3Adapter.cpp.obj -c C:\\programs\\VisualStudio\\consoleProgs\\PG_Engine\\src\\adapters\\WindowSDL3Adapter\\WindowSDL3Adapter.cpp",
-  "file": "C:/programs/VisualStudio/consoleProgs/PG_Engine/src/adapters/WindowSDL3Adapter/WindowSDL3Adapter.cpp",
-  "output": "C:/programs/VisualStudio/consoleProgs/PG_Engine/build/Debug/src/adapters/WindowSDL3Adapter/CMakeFiles/WindowSDL3Adapter.dir/WindowSDL3Adapter.cpp.obj"
+  "directory": "F:/source/PG_Engine/build/Debug",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang++.exe -DUNICODE -D_UNICODE -IF:/source/PG_Engine/src/utils -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @CMakeFiles\\PG_Engine.dir\\src\\core\\EventDispatcher\\EventDispatcher.cpp.obj.modmap -o CMakeFiles\\PG_Engine.dir\\src\\core\\EventDispatcher\\EventDispatcher.cpp.obj -c F:\\source\\PG_Engine\\src\\core\\EventDispatcher\\EventDispatcher.cpp",
+  "file": "F:/source/PG_Engine/src/core/EventDispatcher/EventDispatcher.cpp",
+  "output": "F:/source/PG_Engine/build/Debug/CMakeFiles/PG_Engine.dir/src/core/EventDispatcher/EventDispatcher.cpp.obj"
+},
+{
+  "directory": "F:/source/PG_Engine/build/Debug",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang++.exe -DSDL3Platform_EXPORTS -DUNICODE -D_UNICODE -isystem F:/source/PG_Engine/lib/SDL3/include -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\SDL3Platform.cpp.obj.modmap -o src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\SDL3Platform.cpp.obj -c F:\\source\\PG_Engine\\src\\platform\\SDL3Platform\\SDL3Platform.cpp",
+  "file": "F:/source/PG_Engine/src/platform/SDL3Platform/SDL3Platform.cpp",
+  "output": "F:/source/PG_Engine/build/Debug/src/platform/SDL3Platform/CMakeFiles/SDL3Platform.dir/SDL3Platform.cpp.obj"
+},
+{
+  "directory": "F:/source/PG_Engine/build/Debug",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang++.exe -DSDL3Platform_EXPORTS -DUNICODE -D_UNICODE -isystem F:/source/PG_Engine/lib/SDL3/include -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\SDL3BasePlatform\\SDL3BasePlatform.cpp.obj.modmap -o src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\SDL3BasePlatform\\SDL3BasePlatform.cpp.obj -c F:\\source\\PG_Engine\\src\\platform\\SDL3Platform\\SDL3BasePlatform\\SDL3BasePlatform.cpp",
+  "file": "F:/source/PG_Engine/src/platform/SDL3Platform/SDL3BasePlatform/SDL3BasePlatform.cpp",
+  "output": "F:/source/PG_Engine/build/Debug/src/platform/SDL3Platform/CMakeFiles/SDL3Platform.dir/SDL3BasePlatform/SDL3BasePlatform.cpp.obj"
+},
+{
+  "directory": "F:/source/PG_Engine/build/Debug",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang++.exe -DSDL3Platform_EXPORTS -DUNICODE -D_UNICODE -isystem F:/source/PG_Engine/lib/SDL3/include -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\SDL3WindowPlatform\\SDL3WindowPlatform.cpp.obj.modmap -o src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\SDL3WindowPlatform\\SDL3WindowPlatform.cpp.obj -c F:\\source\\PG_Engine\\src\\platform\\SDL3Platform\\SDL3WindowPlatform\\SDL3WindowPlatform.cpp",
+  "file": "F:/source/PG_Engine/src/platform/SDL3Platform/SDL3WindowPlatform/SDL3WindowPlatform.cpp",
+  "output": "F:/source/PG_Engine/build/Debug/src/platform/SDL3Platform/CMakeFiles/SDL3Platform.dir/SDL3WindowPlatform/SDL3WindowPlatform.cpp.obj"
+},
+{
+  "directory": "F:/source/PG_Engine/build/Debug",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang++.exe -DSDL3Platform_EXPORTS -DUNICODE -D_UNICODE -isystem F:/source/PG_Engine/lib/SDL3/include -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\SDL3InputPlatform\\SDL3InputPlatform.cpp.obj.modmap -o src\\platform\\SDL3Platform\\CMakeFiles\\SDL3Platform.dir\\SDL3InputPlatform\\SDL3InputPlatform.cpp.obj -c F:\\source\\PG_Engine\\src\\platform\\SDL3Platform\\SDL3InputPlatform\\SDL3InputPlatform.cpp",
+  "file": "F:/source/PG_Engine/src/platform/SDL3Platform/SDL3InputPlatform/SDL3InputPlatform.cpp",
+  "output": "F:/source/PG_Engine/build/Debug/src/platform/SDL3Platform/CMakeFiles/SDL3Platform.dir/SDL3InputPlatform/SDL3InputPlatform.cpp.obj"
 }
 ]
