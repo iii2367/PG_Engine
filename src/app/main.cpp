@@ -39,9 +39,9 @@ int main(int argc, char *argv[])
     EventDispatcher dispatcher;
 
     // Робимо підписку на подію KeyDown і якщо вона спрацьовує то викликається лямда функція
-    dispatcher.subscribe(EventType::KeyDown, [&](const Event& e)
+    dispatcher.subscribe(EventType::PG_Key_Down_SPACE, [&](const Event& e)
     {
-        std::cout << "KeyDown" << std::endl; 
+        std::cout << "Pause/Resume" << std::endl; 
         if (!isPause) { isPause = 1; platform->getAudio()->pause(idTex); platform->getAudio()->pause(idDrag); platform->getAudio()->pause(idT);} 
         else { isPause = 0; platform->getAudio()->resume(idTex); platform->getAudio()->resume(idDrag); platform->getAudio()->resume(idT); }
     });
