@@ -13,10 +13,29 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
     case SDL_EVENT_QUIT: {
       return false;
     }
+    case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+
+      getMousePosition(e.x, e.y);
+      switch (event.button.button) {
+      case SDL_BUTTON_LEFT: {
+        e.type = EventType::PG_LMouse_Click;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDL_BUTTON_RIGHT: {
+        e.type = EventType::PG_RMouse_Click;
+        dispatcher.dispatch(e);
+        break;
+      }
+      }
+      break;
+    }
     case SDL_EVENT_KEY_DOWN: // Наш івент якщо кнопка натистута
     {
       // key.mod нужно отдельно потому что дефайн имеет тот же код
       // + к этому эти кнопки могут использоваться в комбинациях
+
+      getMousePosition(e.x, e.y);
       if (event.key.mod & SDL_KMOD_LCTRL) {
         e.type = EventType::PG_Key_Down_LCTRL;
         dispatcher.dispatch(e);
@@ -25,9 +44,7 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
         e.type = EventType::PG_Key_Down_LSHFT;
         dispatcher.dispatch(e);
       }
-
       switch (event.key.key) {
-
       case SDLK_W:
         e.type = EventType::PG_Key_Down_W; // Ми перекладаємо івент на наш
         dispatcher.dispatch(
@@ -88,16 +105,6 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
         dispatcher.dispatch(e);
         break;
       }
-      case SDL_BUTTON_LEFT: {
-        e.type = EventType::PG_LMouse_Click;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDL_BUTTON_RIGHT: {
-        e.type = EventType::PG_RMouse_Click;
-        dispatcher.dispatch(e);
-        break;
-      }
       case SDLK_SPACE: {
         e.type = EventType::PG_Key_Down_SPC;
         dispatcher.dispatch(e);
@@ -112,8 +119,14 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
         e.type = EventType::PG_Key_Down_TAB;
         dispatcher.dispatch(e);
         break;
-      } break;
       }
+      case SDLK_ESCAPE: {
+        e.type = EventType::PG_Key_Down_ESC;
+        dispatcher.dispatch(e);
+        break;
+      }
+      }
+      break;
     case SDL_EVENT_MOUSE_MOTION:
       getMousePosition(e.x, e.y);
       e.type = EventType::PG_Mouse_Move;

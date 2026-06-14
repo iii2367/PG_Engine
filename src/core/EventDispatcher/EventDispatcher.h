@@ -45,6 +45,8 @@ enum class EventType // Перечислення наших івентів дл�
   PG_Key_Up_ENTR,
   PG_Key_Down_TAB,
   PG_Key_Up_TAB,
+  PG_Key_Down_ESC,
+  PG_Key_Up_ESC,
 };
 
 struct Event // Структура інформації про івент
