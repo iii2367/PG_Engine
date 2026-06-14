@@ -11,38 +11,49 @@ class SDL3AudioPlatform : public IAudioPlatform
 {
 public:
     ~SDL3AudioPlatform();
+    bool    initAudio() override;
+    void    quitAudio() override;
+    int     addAudio(const std::string& path, std::string& tag) override;
+    bool    removeAudio(int id) override;
 
-    bool initAudio() override;
+    bool    pauseAudioById(int id) override;
+    bool    pauseAudioByTag(std::string& tag) override;
+    bool    pauseAudioAll() override;
 
-    int playSound(const std::string& filePath) override;
-    void stop(int handle) override;
-    void pause(int handle) override;
-    void resume(int handle) override;
+    bool    resumeAudioById(int id) override;
+    bool    resumeAudioByTag(std::string& tag) override;
+    bool    resumeAudioAll() override;
 
-    void stopAllSounds() override;
-    void setVolume(float volume) override;
+    bool    setVolumeById(int id, float volume = 1.0f) override;
+    bool    setVolumeByTag(std::string& tag, float volume = 1.0f) override;
+    bool    setVolumeById(float volume = 1.0f) override;
+
+    bool    restartAudioById(int id) override;
+    bool    restartAudioByTag(std::string& tag) override;
+    bool    restartAudioAll() override;
+
+    bool    loopAudioById(int id) override;
+    bool    loopAudioByTag(std::string& tag) override;
+    bool    loopAudioAll() override;
+
 private:
-    struct SoundInstance
+    MIX_Mixer* mixer = nullptr; 
+    
+    struct AudioEntry
     {
-        MIX_Track* track = nullptr;
         MIX_Audio* audio = nullptr;
-        bool paused = false;
-        bool active = false;
+        MIX_Track* track = nullptr;
+        std::string tag;
+        bool isLoop = false;
     };
 
-    MIX_Mixer* mixer = nullptr;
-    
-    std::unordered_map<std::string, MIX_Audio*> audioCache;
-    std::unordered_map<int, SoundInstance*> handleMap;
-    std::vector<SoundInstance> instances;
+    int nextId = 1;
+    std::unordered_map<int, AudioEntry> entries;
+    std::unordered_map<std::string, std::vector<int>> tagMap; 
 
-    float m_volume = 1.0f;
-
-    int nextHandle = 1;
-
-    SoundInstance* findInstance(int handle);
-    MIX_Audio* loadAudio(const std::string& path);
-    MIX_Track* getFreeTrack();
+    void bindTag(int id, const std::string& tag);
+    void removeFromTag(int id, const std::string& tag);
+    std::vector<int> getIdsByTag(const std::string& tag);
 };
 
 #endif

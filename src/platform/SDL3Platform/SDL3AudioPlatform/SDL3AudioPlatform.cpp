@@ -3,138 +3,191 @@
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
 
-SDL3AudioPlatform::~SDL3AudioPlatform()
-{
-    
-}
+SDL3AudioPlatform::~SDL3AudioPlatform() { quitAudio(); }
 
-bool SDL3AudioPlatform::initAudio()
+/*============================================================================================*/
+
+bool    SDL3AudioPlatform::initAudio() 
 {
     if (!MIX_Init()) { return false; }
-    mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
 
+    SDL_AudioSpec spec{};
+    spec.freq = 48000;
+    spec.format = SDL_AUDIO_F32;
+    spec.channels = 2;
+
+    mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr); // другий параметер це спеціальні налаштування частоти наприклад
     if (!mixer) { return false; }
 
-    for (int i = 0; i < 32; i++)
+    return (mixer != nullptr);
+}
+void    SDL3AudioPlatform::quitAudio()
+{
+    for (auto& [id, e] : entries)
     {
-        SoundInstance inst;
-        inst.track = MIX_CreateTrack(mixer);
-        instances.push_back(inst);
+        if (e.track) { MIX_DestroyTrack(e.track); }
+        if (e.audio) { MIX_DestroyAudio(e.audio); }
     }
 
-    MIX_SetMixerGain(mixer, m_volume);
+    if (mixer) { MIX_DestroyMixer(mixer); }
+
+    MIX_Quit();
+}
+int     SDL3AudioPlatform::addAudio(const std::string& path, std::string& tag) 
+{
+    MIX_Audio* audio = MIX_LoadAudio(mixer, path.c_str(), false);
+    if (!audio) { return -1; }
+
+    MIX_Track* track = MIX_CreateTrack(mixer);
+    if (!track) { return -1; } 
+    
+    MIX_SetTrackAudio(track, audio);
+    
+    int id = nextId++;
+
+    entries[id] = { audio, track, tag, false };
+    bindTag(id, tag);
+    MIX_PlayTrack(track, 0);
+    return id;
+}
+bool    SDL3AudioPlatform::removeAudio(int id) 
+{
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+
+    if (it->second.track) { MIX_DestroyTrack(it->second.track); }
+
+    if (it->second.audio) { MIX_DestroyAudio(it->second.audio); }
+
+    removeFromTag(id, it->second.tag);
+
+    entries.erase(it);
     return true;
 }
-    
-int SDL3AudioPlatform::playSound(const std::string& filePath)
+
+/*============================================================================================*/
+
+bool    SDL3AudioPlatform::pauseAudioById(int id) 
 {
-    MIX_Audio* audio = loadAudio(filePath);
-    if (!audio) { return -1; } 
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+    return MIX_PauseTrack(it->second.track);
+}
+bool    SDL3AudioPlatform::pauseAudioByTag(std::string& tag) 
+{
+    bool ok = true;
+    for (int id : getIdsByTag(tag)) { ok &= MIX_PauseTrack(entries[id].track); }
+    return ok;
+}
+bool    SDL3AudioPlatform::pauseAudioAll() 
+{
+    for (auto& [id, e] : entries) { MIX_PauseTrack(e.track); }
+    return true;
+}
 
-    MIX_Track* track = getFreeTrack();
-    if (!track) { return -1; } 
+/*============================================================================================*/
 
-    SoundInstance* inst = nullptr;
+bool    SDL3AudioPlatform::resumeAudioById(int id) 
+{
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+    return MIX_ResumeTrack(it->second.track);
+}
+bool    SDL3AudioPlatform::resumeAudioByTag(std::string& tag) 
+{
+    bool ok = true;
+    for (int id : getIdsByTag(tag)) { ok &= MIX_ResumeTrack(entries[id].track); }
+    return ok;
+}
+bool    SDL3AudioPlatform::resumeAudioAll() 
+{
+    for (auto& [id, e] : entries) { MIX_ResumeTrack(e.track); }
+    return true;
+}
 
-    for (auto& i : instances)
+/*============================================================================================*/
+
+bool    SDL3AudioPlatform::setVolumeById(int id, float volume) 
+{
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+    return MIX_SetTrackGain(it->second.track, volume);
+}
+bool    SDL3AudioPlatform::setVolumeByTag(std::string& tag, float volume) 
+{
+    bool ok = true;
+    for (int id : getIdsByTag(tag)) { ok &= MIX_SetTrackGain(entries[id].track, volume); }
+    return ok;
+}
+bool    SDL3AudioPlatform::setVolumeById(float volume) { return MIX_SetMixerGain(mixer, volume); }
+
+/*============================================================================================*/
+
+bool    SDL3AudioPlatform::restartAudioById(int id) 
+{
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+
+    MIX_StopTrack(it->second.track, 0);
+    return MIX_PlayTrack(it->second.track, 0);
+}
+bool    SDL3AudioPlatform::restartAudioByTag(std::string& tag) 
+{
+    bool ok = true;
+    for (int id : getIdsByTag(tag)) { ok &= restartAudioById(id); }
+    return ok;
+}
+bool    SDL3AudioPlatform::restartAudioAll() 
+{
+    for (auto& [id, e] : entries)
     {
-        if (!i.active)
-        {
-            inst = &i;
-            break;
-        }
-    } 
-        
-    if (!inst) { return -1; }
-
-    inst->audio = audio;
-    inst->track = track;
-    inst->active = true;
-    inst->paused = false;
-
-    MIX_SetTrackAudio(track, audio);
-    MIX_PlayTrack(track, 0);
-
-    int handle = nextHandle++;
-    handleMap[handle] = inst;
-
-    return handle;
-}
-
-void SDL3AudioPlatform::pause(int handle)
-{
-    SoundInstance* inst = findInstance(handle);
-    if (!inst || !inst->track) { return; }
-
-    MIX_PauseTrack(inst->track);
-    inst->paused = true;
-}
-
-void SDL3AudioPlatform::resume(int handle)
-{
-    SoundInstance* inst = findInstance(handle);
-    if (!inst || !inst->track) { return; }
-
-    MIX_ResumeTrack(inst->track);
-    inst->paused = false;
-}
-
-void SDL3AudioPlatform::stop(int handle)
-{
-    SoundInstance* inst = findInstance(handle);
-    if (!inst || !inst->track) { return; }
-
-    MIX_StopTrack(inst->track, 0);
-
-    inst->active = false;
-    inst->paused = false;
-
-    handleMap.erase(handle);
-}
-
-void SDL3AudioPlatform::stopAllSounds()
-{
-    if (mixer) { MIX_StopAllTracks(mixer, 0); }
-
-    for (auto& i : instances)
-    {
-        i.active = false;
-        i.paused = false;
+        MIX_StopTrack(e.track, 0);
+        MIX_PlayTrack(e.track, 0);
     }
-}
-    
-void SDL3AudioPlatform::setVolume(float volume)
-{
-    m_volume = volume;
-    if (mixer) { MIX_SetMixerGain(mixer, volume); }
+    return true;
 }
 
-MIX_Audio* SDL3AudioPlatform::loadAudio(const std::string& path)
+/*============================================================================================*/
+
+bool    SDL3AudioPlatform::loopAudioById(int id) 
 {
-    auto it = audioCache.find(path);
-    if (it != audioCache.end()) { return it->second; }
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
 
-    MIX_Audio* audio = MIX_LoadAudio(mixer, path.c_str(), true);
-    if (!audio) { return nullptr; }
-
-    audioCache[path] = audio;
-    return audio;
+    it->second.isLoop = true;
+    return MIX_SetTrackLoops(it->second.track, -1);
 }
-
-SDL3AudioPlatform::SoundInstance* SDL3AudioPlatform::findInstance(int handle)
+bool    SDL3AudioPlatform::loopAudioByTag(std::string& tag) 
 {
-    auto it = handleMap.find(handle);
-    if (it == handleMap.end()) { return nullptr; }
-
-    return it->second;
+    bool ok = true;
+    for (int id : getIdsByTag(tag)) { ok &= loopAudioById(id); }
+    return ok;
 }
-
-MIX_Track* SDL3AudioPlatform::getFreeTrack()
+bool    SDL3AudioPlatform::loopAudioAll() 
 {
-    for (auto& i : instances)
+    for (auto& [id, e] : entries)
     {
-        if (!MIX_TrackPlaying(i.track) && !i.active) { return i.track; }
+        e.isLoop = true;
+        MIX_SetTrackLoops(e.track, -1);
     }
+    return true;
+}
 
-    return instances[0].track; 
+/*============================================================================================*/
+
+void SDL3AudioPlatform::bindTag(int id, const std::string& tag)
+{
+    tagMap[tag].push_back(id);
+}
+
+void SDL3AudioPlatform::removeFromTag(int id, const std::string& tag)
+{
+    auto& vec = tagMap[tag];
+    vec.erase(std::remove(vec.begin(), vec.end(), id), vec.end());
+}
+
+std::vector<int> SDL3AudioPlatform::getIdsByTag(const std::string& tag)
+{
+    if (!tagMap.count(tag)) { return {}; }
+    return tagMap[tag];
 }
