@@ -41,7 +41,7 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
         dispatcher.dispatch(e);
       }
       if (event.key.mod & SDL_KMOD_LSHIFT) {
-        e.type = EventType::PG_Key_Down_LSHFT;
+        e.type = EventType::PG_Key_Down_LSHIFT;
         dispatcher.dispatch(e);
       }
       switch (event.key.key) {
@@ -106,12 +106,12 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
         break;
       }
       case SDLK_SPACE: {
-        e.type = EventType::PG_Key_Down_SPC;
+        e.type = EventType::PG_Key_Down_SPACE;
         dispatcher.dispatch(e);
         break;
       }
       case SDLK_RETURN: {
-        e.type = EventType::PG_Key_Down_ENTR;
+        e.type = EventType::PG_Key_Down_ENTER;
         dispatcher.dispatch(e);
         break;
       }
