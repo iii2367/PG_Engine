@@ -284,3 +284,33 @@ std::vector<int> SDL3AudioPlatform::getIdsByTag(const std::string& tag)
     if (!tagMap.count(tag)) { return {}; }
     return tagMap[tag];
 }
+
+/*============================================================================================*/
+
+bool    SDL3AudioPlatform::setStoppedCallbackById(int id, AudioCallbackHandler callbackFunction)
+{
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+
+    callbacks[id] = std::move(callbackFunction);
+
+    auto wrapper = [](void* userdata, MIX_Track* track)
+    {
+        auto* platform = static_cast<SDL3AudioPlatform*>(userdata);
+
+        for (auto& [id, entry] : platform->entries)
+        {   
+            if (entry.track == track)
+            {
+                auto cbIt = platform->callbacks.find(id);
+                if (cbIt != platform->callbacks.end())
+                {
+                    cbIt->second();
+                }
+                break;
+            }
+        }
+    };
+    return MIX_SetTrackStoppedCallback(it->second.track, wrapper, this); 
+}
+

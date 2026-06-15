@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
     int id3 = platform->getAudio()->addAudio("music/Test3.wav", tag);
     int id4 = platform->getAudio()->addAudio("music/Test4.wav", tag);
     int id5 = platform->getAudio()->addAudio("music/Test5.wav", tag);
+    int ids1 = platform->getAudio()->addAudio("music/TestStream1.wav", tag);
     float vol = 1.0f;
     platform->getAudio()->stopAudioAll();
 
@@ -41,43 +42,9 @@ int main(int argc, char *argv[])
     // створення dispatcher для підписки подій (покищо невикористовується але потрібен)
     EventDispatcher dispatcher;
     
-    puts("press Q to play next");
-    int curId = id1;
     platform->getAudio()->restartAudioById(id1);
-    dispatcher.subscribe(EventType::PG_Key_Down_Q, [&](const Event& e)
-    {
-        if (curId == id1) 
-        { 
-            curId = id2;
-            platform->getAudio()->stopAudioById(id1);
-            platform->getAudio()->restartAudioById(id2);
-        }
-        else if (curId == id2) 
-        { 
-            curId = id3;
-            platform->getAudio()->stopAudioById(id2);
-            platform->getAudio()->restartAudioById(id3);
-        }
-        else if (curId == id3) 
-        { 
-            curId = id4;
-            platform->getAudio()->stopAudioById(id3);
-            platform->getAudio()->restartAudioById(id4);
-        }
-        else if (curId == id4) 
-        { 
-            curId = id5;
-            platform->getAudio()->stopAudioById(id4);
-            platform->getAudio()->restartAudioById(id5);
-        }
-        else if (curId == id5) 
-        { 
-            curId = id1;
-            platform->getAudio()->stopAudioById(id5);
-            platform->getAudio()->restartAudioById(id1);
-        }
-    });
-    
+    platform->getAudio()->setStoppedCallbackById(id1, [&](){platform->getAudio()->restartAudioById(ids1);});
+
     puts("press W to go");
     dispatcher.subscribe(EventType::PG_Key_Down_W, [&](const Event& e)
     {

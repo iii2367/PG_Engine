@@ -1,6 +1,6 @@
 #include "EventDispatcher.h"
 
-void EventDispatcher::subscribe(EventType type, Handler handler) // підписка на івент
+void EventDispatcher::subscribe(EventType type, DispatcherHandler handler) // підписка на івент
 {
     handlers[type].push_back(handler);
 }

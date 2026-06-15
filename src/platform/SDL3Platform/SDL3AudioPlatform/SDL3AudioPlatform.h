@@ -52,6 +52,8 @@ public:
     bool    isPlayingById(int id) override;
     bool    isFinishedById(int id) override;
 
+    bool    setStoppedCallbackById(int id, AudioCallbackHandler callbackFunction) override;
+
 private:
     MIX_Mixer* mixer = nullptr; 
     
@@ -66,6 +68,7 @@ private:
     int nextId = 1;
     std::unordered_map<int, AudioEntry> entries;
     std::unordered_map<std::string, std::vector<int>> tagMap; 
+    std::unordered_map<int, AudioCallbackHandler> callbacks;
 
     void bindTag(int id, const std::string& tag);
     void removeFromTag(int id, const std::string& tag);

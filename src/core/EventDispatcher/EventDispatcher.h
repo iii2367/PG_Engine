@@ -59,14 +59,13 @@ struct Event // Структура інформації про івент
 
 class EventDispatcher {
 public:
-  using Handler =
-      std::function<void(const Event &)>; // Сигнатура функції івенту
+  using DispatcherHandler = std::function<void(const Event &)>; // Сигнатура функції івенту
 
-  void subscribe(EventType type, Handler handler); // підписка на івент
+  void subscribe(EventType type, DispatcherHandler handler); // підписка на івент
   void dispatch(const Event &event); // запуск всіх функцій з івенту
 
 private:
-  std::unordered_map<EventType, std::vector<Handler>>
+  std::unordered_map<EventType, std::vector<DispatcherHandler>>
       handlers; // Сховище функцій івентів
 };
 

@@ -2,6 +2,7 @@
 #define IAUDIOPLATFORM_H
 
 #include <string>
+#include <functional>
 
 struct IAudioPlatform
 {
@@ -47,6 +48,9 @@ struct IAudioPlatform
 
     virtual bool    isPlayingById(int id) = 0;
     virtual bool    isFinishedById(int id) = 0;
+
+    using   AudioCallbackHandler = std::function<void()>;
+    virtual bool    setStoppedCallbackById(int id, AudioCallbackHandler callbackFunction) = 0;
 };
 
 #endif
