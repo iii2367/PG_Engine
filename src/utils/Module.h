@@ -15,6 +15,7 @@ public:
   Module &operator=(const Module &) = delete;
   Module(Module &&) = default;
   Module &operator=(Module &&) = default;
+  Type* operator->() { if (!instance) { throw std::runtime_error("Instance is not created"); } return instance; }
 
   bool load(const std::string &dllPath, const std::string &createName,
             const std::string &destroyName) {

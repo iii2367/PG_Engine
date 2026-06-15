@@ -13,6 +13,7 @@ set(CMAKE_COMPILE_COMMANDS_JSON ON)
 
 add_executable(PG_Engine
     src/app/main.cpp
+    src/core/EventDispatcher/EventDispatcher.cpp
 )
 
 target_include_directories(PG_Engine PRIVATE
@@ -21,7 +22,8 @@ target_include_directories(PG_Engine PRIVATE
 
 add_definitions(-DUNICODE -D_UNICODE)
 
-add_subdirectory(src/adapters/WindowSDL3Adapter)
+#add_subdirectory(src/adapters/WindowSDL3Adapter)
+add_subdirectory(src/platform/SDL3Platform)
 
 add_custom_target(copy_compile_commands ALL
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/compile_commands.json"
