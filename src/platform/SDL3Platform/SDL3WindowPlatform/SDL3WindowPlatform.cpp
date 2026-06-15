@@ -44,3 +44,17 @@ void SDL3WindowPlatform::getWindowSize(int &w, int &h) {
     SDL_GetWindowSize(window, &w, &h);
   }
 }
+
+void *SDL3WindowPlatform::getHandle() {
+  /*#if defined(_WIN32)
+    return (void *)SDL_GetProperty(SDL_GetWindowProperties(window),
+                                   SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+  #elif defined(linux)
+    return (void *)SDL_GetProperty(SDL_GetWindowProperties(window),
+                                   SDL_PROP_WINDOW_X11_WINDOW_NUMBER, nullptr);
+  #elif defined(APPLE)
+    return (void *)SDL_GetProperty(SDL_GetWindowProperties(window),
+                                   SDL_PROP_WINDOW_COCOA_WINDOW_POINTER,
+  nullptr); #endif
+  */
+}

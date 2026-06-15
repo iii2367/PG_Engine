@@ -105,6 +105,76 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
         dispatcher.dispatch(e);
         break;
       }
+      case SDLK_B: {
+        e.type = EventType::PG_Key_Down_B;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_G: {
+        e.type = EventType::PG_Key_Down_G;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_H: {
+        e.type = EventType::PG_Key_Down_H;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_I: {
+        e.type = EventType::PG_Key_Down_I;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_J: {
+        e.type = EventType::PG_Key_Down_J;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_K: {
+        e.type = EventType::PG_Key_Down_K;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_L: {
+        e.type = EventType::PG_Key_Down_L;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_M: {
+        e.type = EventType::PG_Key_Down_M;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_N: {
+        e.type = EventType::PG_Key_Down_N;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_O: {
+        e.type = EventType::PG_Key_Down_O;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_P: {
+        e.type = EventType::PG_Key_Down_P;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_T: {
+        e.type = EventType::PG_Key_Down_T;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_U: {
+        e.type = EventType::PG_Key_Down_U;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_Y: {
+        e.type = EventType::PG_Key_Down_Y;
+        dispatcher.dispatch(e);
+        break;
+      }
       case SDLK_SPACE: {
         e.type = EventType::PG_Key_Down_SPACE;
         dispatcher.dispatch(e);
@@ -122,6 +192,56 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
       }
       case SDLK_ESCAPE: {
         e.type = EventType::PG_Key_Down_ESC;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_0: {
+        e.type = EventType::PG_Key_Down_0;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_1: {
+        e.type = EventType::PG_Key_Down_1;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_2: {
+        e.type = EventType::PG_Key_Down_2;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_3: {
+        e.type = EventType::PG_Key_Down_3;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_4: {
+        e.type = EventType::PG_Key_Down_4;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_5: {
+        e.type = EventType::PG_Key_Down_5;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_6: {
+        e.type = EventType::PG_Key_Down_6;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_7: {
+        e.type = EventType::PG_Key_Down_7;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_8: {
+        e.type = EventType::PG_Key_Down_8;
+        dispatcher.dispatch(e);
+        break;
+      }
+      case SDLK_9: {
+        e.type = EventType::PG_Key_Down_9;
         dispatcher.dispatch(e);
         break;
       }
