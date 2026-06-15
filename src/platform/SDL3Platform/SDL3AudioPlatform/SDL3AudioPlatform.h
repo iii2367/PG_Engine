@@ -13,6 +13,7 @@ public:
     ~SDL3AudioPlatform();
     bool    initAudio() override;
     void    quitAudio() override;
+
     int     addAudio(const std::string& path, std::string& tag) override;
     bool    removeAudio(int id) override;
 
@@ -35,6 +36,13 @@ public:
     bool    loopAudioById(int id) override;
     bool    loopAudioByTag(std::string& tag) override;
     bool    loopAudioAll() override;
+
+    bool    stopLoopAudioById(int id) override;
+    bool    stopLoopAudioByTag(std::string& tag) override;
+    bool    stopLoopAudioAll() override;
+
+    bool    isPlayingById(int id) override;
+    bool    isFinishedById(int id) override;
 
 private:
     MIX_Mixer* mixer = nullptr; 

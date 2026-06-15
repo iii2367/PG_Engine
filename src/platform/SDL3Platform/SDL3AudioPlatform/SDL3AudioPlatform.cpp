@@ -175,6 +175,46 @@ bool    SDL3AudioPlatform::loopAudioAll()
 
 /*============================================================================================*/
 
+bool    SDL3AudioPlatform::stopLoopAudioById(int id)
+{
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+
+    it->second.isLoop = true;
+    return MIX_SetTrackLoops(it->second.track, 0);
+}
+bool    SDL3AudioPlatform::stopLoopAudioByTag(std::string& tag)
+{
+    bool ok = true;
+    for (int id : getIdsByTag(tag)) { ok &= stopLoopAudioById(id); }
+    return ok;
+}
+bool    SDL3AudioPlatform::stopLoopAudioAll()
+{
+    for (auto& [id, e] : entries)
+    {
+        e.isLoop = false;
+        MIX_SetTrackLoops(e.track, 0);
+    }
+    return true;
+}
+
+/*============================================================================================*/
+
+bool    SDL3AudioPlatform::isPlayingById(int id)
+{
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+    return MIX_TrackPlaying(it->second.track);
+}
+bool    SDL3AudioPlatform::isFinishedById(int id) {
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+    return !MIX_TrackPlaying(it->second.track) && !MIX_TrackPaused(it->second.track);
+}
+
+/*============================================================================================*/
+
 void SDL3AudioPlatform::bindTag(int id, const std::string& tag)
 {
     tagMap[tag].push_back(id);

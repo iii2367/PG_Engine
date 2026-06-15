@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
     int id1 = platform->getAudio()->addAudio("music/Test.wav", tag);
     int id2 = platform->getAudio()->addAudio("music/Test2.wav", tag);  
     int id3 = platform->getAudio()->addAudio("music/Test3.wav", tag);
+    int id4 = platform->getAudio()->addAudio("music/Test4.wav", tag);
+    int id5 = platform->getAudio()->addAudio("music/Test5.wav", tag);
     bool isPause = 0;
     float vol = 1.0f;
 
@@ -48,17 +50,55 @@ int main(int argc, char *argv[])
     });
     dispatcher.subscribe(EventType::PG_Key_Down_D, [&](const Event& e)
     {
-        std::cout << "DragonBorn volume+" << std::endl;
+        std::cout << "Test4 volume+" << std::endl;
         if (vol < 10) { vol += 0.2f; std::cout << "Volume: "<< vol << std::endl; } else { vol = 10; puts("Volume = 10"); }
-        platform->getAudio()->setVolumeById(id2,vol);
+        platform->getAudio()->setVolumeById(id4,vol);
     });
     dispatcher.subscribe(EventType::PG_Key_Down_A, [&](const Event& e)
     {
-        std::cout << "DragonBorn volume-" << std::endl;
+        std::cout << "Test4 volume-" << std::endl;
         if (vol > 0) { vol -= 0.2f; std::cout << "Volume: "<< vol << std::endl; } else { vol = 0; puts("Volume = 0"); }
-        platform->getAudio()->setVolumeById(id2,vol);
+        platform->getAudio()->setVolumeById(id4,vol);
     });
 
+    //platform->getAudio()->loopAudioById(id4);
+    puts("Q - Pouse by tag");
+    dispatcher.subscribe(EventType::PG_Key_Down_Q, [&](const Event& e)
+    {
+        platform->getAudio()->pauseAudioByTag(tag);
+    });
+
+    puts("R remove Test1 Test3");
+    dispatcher.subscribe(EventType::PG_Key_Down_R, [&](const Event& e)
+    {
+        //platform->getAudio()->pauseAudioById(id1);
+        platform->getAudio()->removeAudio(id1);
+        //platform->getAudio()->pauseAudioById(id3);
+        platform->getAudio()->removeAudio(id3);
+    });
+    puts("press W to go");
+    dispatcher.subscribe(EventType::PG_Key_Down_W, [&](const Event& e)
+    {
+        if (platform->getAudio()->isFinishedById(id5))
+        {
+            platform->getAudio()->restartAudioById(id5);
+        }
+    });
+    puts("press F to shoot");
+    dispatcher.subscribe(EventType::PG_Key_Down_F, [&](const Event& e)
+    {
+        if (platform->getAudio()->isFinishedById(id4))
+        {
+            platform->getAudio()->restartAudioById(id4);
+        }
+    });
+
+    puts("X to stop shoot");
+    bool lo = platform->getAudio()->loopAudioById(id4);
+    dispatcher.subscribe(EventType::PG_Key_Down_X, [&](const Event& e)
+    {
+        if (lo) { platform->getAudio()->stopLoopAudioById(id4); }
+    });
 
  
     bool running = true;
