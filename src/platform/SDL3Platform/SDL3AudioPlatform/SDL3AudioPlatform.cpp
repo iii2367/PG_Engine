@@ -33,6 +33,9 @@ void    SDL3AudioPlatform::quitAudio()
 
     MIX_Quit();
 }
+
+/*============================================================================================*/
+
 int     SDL3AudioPlatform::addAudio(const std::string& path, std::string& tag) 
 {
     MIX_Audio* audio = MIX_LoadAudio(mixer, path.c_str(), false);
@@ -143,6 +146,30 @@ bool    SDL3AudioPlatform::restartAudioAll()
     {
         MIX_StopTrack(e.track, 0);
         MIX_PlayTrack(e.track, 0);
+    }
+    return true;
+}
+
+/*============================================================================================*/
+
+bool    SDL3AudioPlatform::stopAudioById(int id) 
+{
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+
+    return MIX_StopTrack(it->second.track, 0);
+}
+bool    SDL3AudioPlatform::stopAudioByTag(std::string& tag) 
+{
+    bool ok = true;
+    for (int id : getIdsByTag(tag)) { ok &= stopAudioById(id); }
+    return ok;
+}
+bool    SDL3AudioPlatform::stopAudioAll() 
+{
+    for (auto& [id, e] : entries)
+    {
+        MIX_StopTrack(e.track, 0);
     }
     return true;
 }

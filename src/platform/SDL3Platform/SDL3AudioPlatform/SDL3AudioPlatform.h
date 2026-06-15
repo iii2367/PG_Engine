@@ -33,6 +33,10 @@ public:
     bool    restartAudioByTag(std::string& tag) override;
     bool    restartAudioAll() override;
 
+    bool    stopAudioById(int id) override;
+    bool    stopAudioByTag(std::string& tag) override;
+    bool    stopAudioAll() override;
+
     bool    loopAudioById(int id) override;
     bool    loopAudioByTag(std::string& tag) override;
     bool    loopAudioAll() override;

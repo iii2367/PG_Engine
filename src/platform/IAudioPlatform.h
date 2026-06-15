@@ -28,6 +28,10 @@ struct IAudioPlatform
     virtual bool    restartAudioById(int id) = 0;
     virtual bool    restartAudioByTag(std::string& tag) = 0;
     virtual bool    restartAudioAll() = 0;
+    
+    virtual bool    stopAudioById(int id) = 0;
+    virtual bool    stopAudioByTag(std::string& tag) = 0;
+    virtual bool    stopAudioAll() = 0;
 
     virtual bool    loopAudioById(int id) = 0;
     virtual bool    loopAudioByTag(std::string& tag) = 0;
