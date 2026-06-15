@@ -202,6 +202,32 @@ bool    SDL3AudioPlatform::loopAudioAll()
 
 /*============================================================================================*/
 
+bool    SDL3AudioPlatform::loopAudioById(int id, int num_loops) 
+{
+    auto it = entries.find(id);
+    if (it == entries.end()) { return false; }
+
+    it->second.isLoop = true;
+    return MIX_SetTrackLoops(it->second.track, num_loops);
+}
+bool    SDL3AudioPlatform::loopAudioByTag(std::string& tag, int num_loops) 
+{
+    bool ok = true;
+    for (int id : getIdsByTag(tag)) { ok &= loopAudioById(id, num_loops); }
+    return ok;
+}
+bool    SDL3AudioPlatform::loopAudioAll(int num_loops) 
+{
+    for (auto& [id, e] : entries)
+    {
+        e.isLoop = true;
+        MIX_SetTrackLoops(e.track, num_loops);
+    }
+    return true;
+}
+
+/*============================================================================================*/
+
 bool    SDL3AudioPlatform::stopLoopAudioById(int id)
 {
     auto it = entries.find(id);

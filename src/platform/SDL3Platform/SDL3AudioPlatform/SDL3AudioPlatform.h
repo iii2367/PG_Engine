@@ -41,6 +41,10 @@ public:
     bool    loopAudioByTag(std::string& tag) override;
     bool    loopAudioAll() override;
 
+    bool    loopAudioById(int id, int num_loops) override;
+    bool    loopAudioByTag(std::string& tag, int num_loops) override;
+    bool    loopAudioAll(int num_loops) override;
+
     bool    stopLoopAudioById(int id) override;
     bool    stopLoopAudioByTag(std::string& tag) override;
     bool    stopLoopAudioAll() override;

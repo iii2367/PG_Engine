@@ -84,6 +84,7 @@ int main(int argc, char *argv[])
         if (platform->getAudio()->isFinishedById(id5))
         {
             platform->getAudio()->restartAudioById(id5);
+            platform->getAudio()->loopAudioById(id5, 5);
         }
     });
     puts("press F to shoot");
