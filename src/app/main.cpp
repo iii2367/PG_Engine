@@ -27,40 +27,31 @@ int main(int argc, char *argv[])
     if (!platform->getAudio()->initAudio()) { throw std::runtime_error("failed to init audio."); }
     
     std::string tag = "Music";
-    int id1 = platform->getAudio()->addAudio("music/Test.wav", tag);
-    int id2 = platform->getAudio()->addAudio("music/Test2.wav", tag);  
-    int id3 = platform->getAudio()->addAudio("music/Test3.wav", tag);
-    int id4 = platform->getAudio()->addAudio("music/Test4.wav", tag);
-    int id5 = platform->getAudio()->addAudio("music/Test5.wav", tag);
-    int ids1 = platform->getAudio()->addAudio("music/TestStream1.wav", tag);
+    int id1; 
+    
+    
     float vol = 1.0f;
-    platform->getAudio()->stopAudioAll();
+    
 
     // Створення вікна Платформи
     platform->getWindow()->createWindow(800, 600, "SDL3");
  
-    // створення dispatcher для підписки подій (покищо невикористовується але потрібен)
     EventDispatcher dispatcher;
     
-    platform->getAudio()->restartAudioById(id1);
-    platform->getAudio()->setStoppedCallbackById(id1, [&](){platform->getAudio()->restartAudioById(ids1);});
+   
 
-    puts("press W to go");
-    dispatcher.subscribe(EventType::PG_Key_Down_W, [&](const Event& e)
+    puts("press A to create");
+    dispatcher.subscribe(EventType::PG_Key_Down_A, [&](const Event& e)
     {
-        if (platform->getAudio()->isFinishedById(id5))
-        {
-            platform->getAudio()->restartAudioById(id5);
-            platform->getAudio()->loopAudioById(id5, 5);
-        }
+puts("you press A");
+        id1 = platform->getAudio()->addAudioStream("music/Test.wav", tag); 
     });
-    puts("press F to shoot");
-    dispatcher.subscribe(EventType::PG_Key_Down_F, [&](const Event& e)
+    puts("press D to destroy");
+    dispatcher.subscribe(EventType::PG_Key_Down_D, [&](const Event& e)
     {
-        if (platform->getAudio()->isFinishedById(id4))
-        {
-            platform->getAudio()->restartAudioById(id4);
-        }
+puts("you press D");
+        platform->getAudio()->stopAudioById(id1);
+        platform->getAudio()->removeAudio(id1);
     });
  
     bool running = true;

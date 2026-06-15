@@ -12,6 +12,7 @@ struct IAudioPlatform
     virtual void    quitAudio() = 0;
 
     virtual int     addAudio(const std::string& path, std::string& tag) = 0;
+    virtual int     addAudioStream(const std::string& path, std::string& tag) = 0;
     virtual bool    removeAudio(int id) = 0;
 
     virtual bool    pauseAudioById(int id) = 0;
@@ -51,6 +52,7 @@ struct IAudioPlatform
 
     using   AudioCallbackHandler = std::function<void()>;
     virtual bool    setStoppedCallbackById(int id, AudioCallbackHandler callbackFunction) = 0;
+    virtual bool    setStoppedCallbackByTag(const std::string& tag, const AudioCallbackHandler& callbackFunction) = 0;
 };
 
 #endif

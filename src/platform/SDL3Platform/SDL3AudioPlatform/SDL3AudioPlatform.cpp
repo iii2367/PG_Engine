@@ -48,8 +48,34 @@ int     SDL3AudioPlatform::addAudio(const std::string& path, std::string& tag)
     
     int id = nextId++;
 
-    entries[id] = { audio, track, tag, false };
+    entries[id] = { audio, track, nullptr, tag, false };
     bindTag(id, tag);
+    MIX_PlayTrack(track, 0);
+    return id;
+}
+int     SDL3AudioPlatform::addAudioStream(const std::string& path, std::string& tag)
+{
+    SDL_IOStream* io = SDL_IOFromFile(path.c_str(), "rb");
+    if (!io) { return -1; }
+
+    MIX_Track* track = MIX_CreateTrack(mixer);
+    if (!track) 
+    {
+        SDL_CloseIO(io);
+        return -1;
+    }
+
+    if (!MIX_SetTrackIOStream(track, io, true)) 
+    { 
+        MIX_DestroyTrack(track);
+        SDL_CloseIO(io);
+        return -1;
+    }
+
+    int id = nextId++;
+    entries[id] = { nullptr, track, nullptr, tag, false };
+    bindTag(id, tag);
+
     MIX_PlayTrack(track, 0);
     return id;
 }
@@ -59,8 +85,8 @@ bool    SDL3AudioPlatform::removeAudio(int id)
     if (it == entries.end()) { return false; }
 
     if (it->second.track) { MIX_DestroyTrack(it->second.track); }
-
     if (it->second.audio) { MIX_DestroyAudio(it->second.audio); }
+    if (it->second.stream) { SDL_DestroyAudioStream(it->second.stream); }
 
     removeFromTag(id, it->second.tag);
 
@@ -272,13 +298,11 @@ void SDL3AudioPlatform::bindTag(int id, const std::string& tag)
 {
     tagMap[tag].push_back(id);
 }
-
 void SDL3AudioPlatform::removeFromTag(int id, const std::string& tag)
 {
     auto& vec = tagMap[tag];
     vec.erase(std::remove(vec.begin(), vec.end(), id), vec.end());
 }
-
 std::vector<int> SDL3AudioPlatform::getIdsByTag(const std::string& tag)
 {
     if (!tagMap.count(tag)) { return {}; }
@@ -313,4 +337,12 @@ bool    SDL3AudioPlatform::setStoppedCallbackById(int id, AudioCallbackHandler c
     };
     return MIX_SetTrackStoppedCallback(it->second.track, wrapper, this); 
 }
-
+bool    SDL3AudioPlatform::setStoppedCallbackByTag(const std::string& tag, const AudioCallbackHandler& callbackFunction) 
+{
+    bool ok = true;
+    for (int id : getIdsByTag(tag))
+    {
+        ok &= setStoppedCallbackById(id, callbackFunction);
+    }
+    return ok;
+}

@@ -15,6 +15,7 @@ public:
     void    quitAudio() override;
 
     int     addAudio(const std::string& path, std::string& tag) override;
+    int     addAudioStream(const std::string& path, std::string& tag) override;
     bool    removeAudio(int id) override;
 
     bool    pauseAudioById(int id) override;
@@ -53,6 +54,7 @@ public:
     bool    isFinishedById(int id) override;
 
     bool    setStoppedCallbackById(int id, AudioCallbackHandler callbackFunction) override;
+    bool    setStoppedCallbackByTag(const std::string& tag, const AudioCallbackHandler& callbackFunction) override;
 
 private:
     MIX_Mixer* mixer = nullptr; 
@@ -61,6 +63,7 @@ private:
     {
         MIX_Audio* audio = nullptr;
         MIX_Track* track = nullptr;
+        SDL_AudioStream* stream = nullptr;
         std::string tag;
         bool isLoop = false;
     };
