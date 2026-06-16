@@ -1,79 +1,44 @@
-#include "../utils/Module.h"
-#include <cstdio>
+#include "../engine/Engine.h"
+#include "Module.h"
 #include <iostream>
 #include <stdexcept>
 
-#include "../core/EventDispatcher/EventDispatcher.h"
-#include "../platform/IPlatform.h"
+int main(int argc, char *argv[])
+{
+    try 
+    {
+        Utils::Module<Engine> engine;
+        engine.load("Engine.dll", "getClass", "destroyClass");
+        engine->init(EngineInitInfo::isBasePlatform | EngineInitInfo::isWindowPlatform | EngineInitInfo::isInputPlatform | EngineInitInfo::isAudioPlatform | EngineInitInfo::isEventDispatcher);
 
-int main(int argc, char *argv[]) {
-  try {
-    Utils::Module<IPlatform>
-        platform; // Створення обгортки над класом з dll :: <Інтерфейс_обєкта>
+        auto platform = engine->getPlatform();
+        auto base = engine->getPlatform()->getBase();
+        auto window = engine->getPlatform()->getWindow();
+        auto input = engine->getPlatform()->getInput();
+        auto audio = engine->getPlatform()->getAudio();
+        auto eventDispatcher = engine->getEventDispatcher();
 
-    // Завантаження класу з dll :: функція отримує такі аргументи dllPath - шлях
-    // до dll :: createName - імя функції яка повертає вказівни на клас ::
-    // destroyName - імя функції яка знищує клас
-    platform.load(
-        "SDL3Platform.dll", "getClass",
-        "destroyClass"); // Завантаження класу з dll :: функція отримує такі
-                         // аргументи dllPath - шлях до dll
+        window->createWindow(800, 600, "PG Engine");
 
-    // Звернення до методів класу який був в dll :: створення під обєктів
-    // платформи
-    platform->createBasePlatform();
-    platform->createWindowPlatform();
-    platform->createInputPlatform();
-    platform->createAudioPlatform();
+        std::string audioTag = "Music";
+        auto id1 = audio->addAudioStream("music/TestStream1.wav", audioTag);
+        audio->loopAudioById(id1);
+        
+        bool runnind = 1;
+        while (runnind)
+        {
+            base->update(16);
+            runnind = input->pollEvents(*eventDispatcher);
+            window->renderFrame();
+        }
+        
+        window->destroyWindow();
+        base->shutdown();
 
-    // Ініціація платформи
-    if (!platform->getBase()->init()) {
-      throw std::runtime_error("failed to init base.");
+    } catch (std::runtime_error &e) 
+    {
+        std::cout << e.what() << std::endl;
+        std::cin.get();
     }
-    if (!platform->getAudio()->initAudio()) {
-      throw std::runtime_error("failed to init audio.");
-    }
-
-    std::string tag = "Music";
-    int id1;
-
-    float vol = 1.0f;
-
-    // Створення вікна Платформи
-    platform->getWindow()->createWindow(800, 600, "SDL3");
-
-    EventDispatcher dispatcher;
-
-    puts("press A to create");
-    dispatcher.subscribe(EventType::PG_Key_Down_P, [&](const Event &e) {
-      puts("you press A");
-      id1 = platform->getAudio()->addAudioStream("music/Test.wav", tag);
-    });
-    puts("press D to destroy");
-    dispatcher.subscribe(EventType::PG_Key_Down_D, [&](const Event &e) {
-      puts("you press D");
-      platform->getAudio()->stopAudioById(id1);
-      platform->getAudio()->removeAudio(id1);
-    });
-
-    bool running = true;
-
-    while (running) {
-      platform.getInstance()->getBase()->update(
-          16); // зупинка виконнання програми
-      running = platform.getInstance()->getInput()->pollEvents(
-          dispatcher); // обробробка івентів
-      platform.getInstance()
-          ->getWindow()
-          ->renderFrame(); // рендер зображення вікна
-    }
-
-    platform->getWindow()->destroyWindow(); // знищення вікна
-    platform->getBase()->shutdown();        // знищення бази платформи
-
-  } catch (std::runtime_error &e) {
-    std::cout << e.what() << std::endl;
-    std::cin.get();
-  }
   return 0;
 }
