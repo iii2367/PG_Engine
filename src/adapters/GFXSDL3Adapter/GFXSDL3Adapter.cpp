@@ -8,6 +8,7 @@ GFXSDL3Adapter::~GFXSDL3Adapter()
 bool GFXSDL3Adapter::init(WindowHandle& handle)
 {
 
+    return true;
 }
 void GFXSDL3Adapter::quitGFX()
 {
