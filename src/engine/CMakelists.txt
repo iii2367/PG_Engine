@@ -1,0 +1,6 @@
+Project(Engine)
+
+add_library(Engine Engine.cpp Engine.h )
+
+add_definitions(-DUNICODE -D_UNICODE)
+
