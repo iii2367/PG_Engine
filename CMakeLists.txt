@@ -32,3 +32,8 @@ add_custom_target(copy_compile_commands ALL
     "${CMAKE_SOURCE_DIR}/compile_commands.json"
 )
 
+if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Release")
+set_target_properties(PG_Engine PROPERTIES
+    LINK_FLAGS "-Wl,/SUBSYSTEM:WINDOWS,/ENTRY:mainCRTStartup"
+)
+endif()

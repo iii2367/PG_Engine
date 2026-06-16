@@ -2,8 +2,7 @@
 #include <SDL3/SDL_platform.h>
 #include <SDL3/SDL_video.h>
 
-bool SDL3WindowPlatform::createWindow(int width, int height,
-                                      std::string title) {
+bool SDL3WindowPlatform::createWindow(int width, int height, std::string title, bool needRender) {
   window = SDL_CreateWindow(title.c_str(), width, height, SDL_WINDOW_RESIZABLE);
 
   render = SDL_CreateRenderer(window, nullptr);

@@ -10,7 +10,7 @@ public:
   SDL_Window *window = nullptr;
   SDL_Renderer *render = nullptr;
 
-  bool createWindow(int width, int height, std::string title) override;
+  bool createWindow(int width, int height, std::string title, bool needRender) override;
   void destroyWindow() override;
   void renderFrame() override;
   void getWindowSize(int &w, int &h) override;

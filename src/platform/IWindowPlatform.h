@@ -7,7 +7,7 @@
 struct IWindowPlatform {
   virtual ~IWindowPlatform() = default;
 
-  virtual bool createWindow(int width, int height, std::string title) = 0;
+  virtual bool createWindow(int width, int height, std::string title, bool needRender) = 0;
   virtual void renderFrame() = 0;
   virtual void destroyWindow() = 0;
   virtual void getWindowSize(int &w, int &h) = 0;
