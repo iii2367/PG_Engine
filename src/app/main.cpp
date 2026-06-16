@@ -18,7 +18,8 @@ int main(int argc, char *argv[])
         auto audio = engine->getPlatform()->getAudio();
         auto eventDispatcher = engine->getEventDispatcher();
 
-        window->createWindow(800, 600, "PG Engine");
+        WindowInfo winInfo{};
+        window->createWindow(winInfo);
 
         std::string audioTag = "Music";
         auto id1 = audio->addAudioStream("music/TestStream1.wav", audioTag);

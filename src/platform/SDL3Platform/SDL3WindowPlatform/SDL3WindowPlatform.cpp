@@ -1,16 +1,26 @@
 #include "SDL3WindowPlatform.h"
+#include <SDL3/SDL_platform.h>
 #include <SDL3/SDL_video.h>
 
-bool SDL3WindowPlatform::createWindow(int width, int height,
-                                      std::string title) {
-  window = SDL_CreateWindow(title.c_str(), width, height, SDL_WINDOW_RESIZABLE);
-
-  render = SDL_CreateRenderer(window, nullptr);
-  if (!window || !render) {
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-    return false;
-  }
+bool SDL3WindowPlatform::createWindow(const WindowInfo& info) {
+    if (window || render) { return false; }
+    
+    Uint32 flags = 0;
+    if (info.resizable) { flags |= SDL_WINDOW_RESIZABLE; }
+    if (info.fullscreen) { flags |= SDL_WINDOW_FULLSCREEN; }
+    if (!info.decorated) { flags |= SDL_WINDOW_BORDERLESS; }
+    
+    window = SDL_CreateWindow(info.title.c_str(), info.width, info.height, flags);
+    if (!window) { SDL_Log("SDL_CreateWindow failed: %s", SDL_GetError()); return false; }
+    
+    if (info.enableRender) { 
+        render = SDL_CreateRenderer(window, nullptr); 
+        if (!render) { SDL_Log("SDL_CreateRenderer failed: %s", SDL_GetError());
+            SDL_DestroyWindow(window);
+            window = nullptr;
+            return false;
+        }
+    }
   return true;
 }
 
@@ -21,10 +31,12 @@ void SDL3WindowPlatform::destroyWindow() {
   }
 }
 
-void SDL3WindowPlatform::renderFrame() {
+bool SDL3WindowPlatform::renderFrame() {
+  if (!render) { return false; }
   SDL_SetRenderDrawColor(render, 128, 128, 128, 255);
   SDL_RenderClear(render);
   SDL_RenderPresent(render);
+  return true;
 }
 
 void SDL3WindowPlatform::setTitle(std::string title) {
@@ -45,16 +57,10 @@ void SDL3WindowPlatform::getWindowSize(int &w, int &h) {
   }
 }
 
-void *SDL3WindowPlatform::getHandle() {
-  /*#if defined(_WIN32)
-    return (void *)SDL_GetProperty(SDL_GetWindowProperties(window),
-                                   SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-  #elif defined(linux)
-    return (void *)SDL_GetProperty(SDL_GetWindowProperties(window),
-                                   SDL_PROP_WINDOW_X11_WINDOW_NUMBER, nullptr);
-  #elif defined(APPLE)
-    return (void *)SDL_GetProperty(SDL_GetWindowProperties(window),
-                                   SDL_PROP_WINDOW_COCOA_WINDOW_POINTER,
-  nullptr); #endif
-  */
+WindowHandle SDL3WindowPlatform::getWindowHandle() {
+    WindowHandle wh{};
+    wh.type = TypeWindowHandle::SDL3;
+    wh.handle = window;
+    getWindowSize(wh.width, wh.height);
+    return wh;
 }

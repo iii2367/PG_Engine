@@ -10,13 +10,13 @@ public:
   SDL_Window *window = nullptr;
   SDL_Renderer *render = nullptr;
 
-  bool createWindow(int width, int height, std::string title) override;
+  bool createWindow(const WindowInfo& info) override;
   void destroyWindow() override;
-  void renderFrame() override;
+  bool renderFrame() override;
   void getWindowSize(int &w, int &h) override;
   void setTitle(std::string title) override;
   void resize(int width, int height) override;
-  void *getHandle() override;
+  WindowHandle getWindowHandle() override;
 };
 
 #endif

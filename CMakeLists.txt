@@ -18,12 +18,14 @@ add_executable(PG_Engine
 
 target_include_directories(PG_Engine PRIVATE
     src/utils
+    lib/glm
 )
 
 add_definitions(-DUNICODE -D_UNICODE)
 
 #add_subdirectory(src/adapters/WindowSDL3Adapter)
 add_subdirectory(src/platform/SDL3Platform)
+add_subdirectory(src/adapters/GFXSDL3Adapter)
 add_subdirectory(src/engine)
 
 add_custom_target(copy_compile_commands ALL
@@ -31,3 +33,8 @@ add_custom_target(copy_compile_commands ALL
     "${CMAKE_SOURCE_DIR}/compile_commands.json"
 )
 
+if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Release")
+set_target_properties(PG_Engine PROPERTIES
+    LINK_FLAGS "-Wl,/SUBSYSTEM:WINDOWS,/ENTRY:mainCRTStartup"
+)
+endif()
