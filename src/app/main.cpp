@@ -21,30 +21,9 @@ int main(int argc, char *argv[])
         window->createWindow(800, 600, "PG Engine");
 
         std::string audioTag = "Music";
-        std::vector<uint32_t> audioId;
-        audioId.push_back(audio->addAudio("music/Test1.wav", audioTag));
-        audioId.push_back(audio->addAudio("music/Test2.wav", audioTag));
-        audioId.push_back(audio->addAudio("music/Test3.wav", audioTag));
-        audioId.push_back(audio->addAudio("music/TestStream1.wav", audioTag));
-        audio->stopAudioAll();
-        int curIndex = 0;
-
-        std::function<void()> playNext;
-        playNext = [&]() 
-        {
-            curIndex = (curIndex + 1) % audioId.size();
-            int nextId = audioId[curIndex];
-            audio->restartAudioById(nextId);
-            audio->setStoppedCallbackById(nextId, playNext);
-        };
-
-        int firstId = audioId[curIndex];
-        audio->restartAudioById(firstId);
-        audio->setStoppedCallbackById(firstId, playNext);
-
-        eventDispatcher->subscribe(EventType::PG_Key_Down_N, [&](Event e) {playNext();});
-        eventDispatcher->subscribe(EventType::PG_Key_Down_B, [&](Event e) {curIndex = (curIndex - 1 + audioId.size()) % audioId.size();int prevId = audioId[curIndex];audio->restartAudioById(prevId);audio->setStoppedCallbackById(prevId, playNext);});
-
+        auto id1 = audio->addAudioStream("music/TestStream1.wav", audioTag);
+        audio->loopAudioById(id1);
+        
         bool runnind = 1;
         while (runnind)
         {
