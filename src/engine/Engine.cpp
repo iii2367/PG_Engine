@@ -1,69 +1,63 @@
 #include "Engine.h"
-#include <cstdint>
 
-inline engineInfo operator|(engineInfo first, engineInfo next) {
-  return static_cast<engineInfo>(static_cast<uint32_t>(first) |
-                                 static_cast<uint32_t>(next));
+Engine::~Engine()
+{
+    if (platform.isLoaded()) { platform.unload(); }
 }
 
-inline bool operator&(engineInfo first, engineInfo next) {
-  return (static_cast<uint32_t>(first) & static_cast<uint32_t>(next)) != 0;
-}
-
-bool Engine::init(engineInfo info) {
-  if (info & engineInfo::isPlatform) {
-    // platform init
-    platform.load(
-        "SDL3Platform.dll", "getClass",
-        "destroyClass"); // Завантаження класу з dll :: функція отримує такі
-  }
-  if (info & engineInfo::isBasePlatform) {
-    // base init
+bool Engine::init(EngineInitInfo info) 
+{
+  platform.load("SDL3Platform.dll", "getClass", "destroyClass"); 
+  if (info & EngineInitInfo::isBasePlatform)
+  {
     platform->createBasePlatform();
-    if (!platform->getBase()->init()) {
+    if (!platform->getBase()->init())
+    {
       return false;
     }
   }
-  if (info & engineInfo::isWindowPlatform) {
-    // window init
+  if (info & EngineInitInfo::isWindowPlatform)
+  {
     platform->createWindowPlatform();
   }
-  if (info & engineInfo::isAudioPlatform) {
-    // audio init
+  if (info & EngineInitInfo::isAudioPlatform) 
+  {
     platform->createAudioPlatform();
     if (!platform->getAudio()->initAudio()) {
       return false;
     }
   }
-  if (info & engineInfo::isInputPlatform) {
-    // input init
+  if (info & EngineInitInfo::isInputPlatform) 
+  {
     platform->createInputPlatform();
   }
+  if (info & EngineInitInfo::isEventDispatcher) { eventDispatcher = new EventDispatcher(); }
   return true;
 }
 
-// on the bottom getters.
-
 IPlatform *Engine::getPlatform() const {
   return platform.getInstance();
-} // Возвращает платформ
-
-IBasePlatform *Engine::getBasePlatform() {
+} 
+/*
+IBasePlatform *Engine::getBasePlatform() const {
   return platform->getBase();
-} // Возвращает базовую платформу
+} 
 
-IAudioPlatform *Engine::getAudioPlatform() {
+IAudioPlatform *Engine::getAudioPlatform() const {
   return platform->getAudio();
-} // audio возвращает
+} 
 
-IInputPlatform *Engine::getInputPlatform() {
+IInputPlatform *Engine::getInputPlatform() const {
   return platform->getInput();
-} // input возвращает
+} 
 
-IWindowPlatform *Engine::getWindowPlatform() {
+IWindowPlatform *Engine::getWindowPlatform() const {
   return platform->getWindow();
-} // window возвращает
-
-EventDispatcher *Engine::getEventDispatcher() {
+} 
+*/
+EventDispatcher *Engine::getEventDispatcher() const {
   return eventDispatcher;
-} // event возвращает
+}
+
+extern "C" __declspec(dllexport) Engine* getClass() { return new Engine(); }
+extern "C" __declspec(dllexport) void destroyClass(Engine* ptr) { delete ptr; }
