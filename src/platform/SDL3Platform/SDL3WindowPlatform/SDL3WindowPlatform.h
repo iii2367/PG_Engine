@@ -16,7 +16,7 @@ public:
   void getWindowSize(int &w, int &h) override;
   void setTitle(std::string title) override;
   void resize(int width, int height) override;
-  void *getHandle() override;
+  WindowHandle getWindowHandle() override;
 };
 
 #endif

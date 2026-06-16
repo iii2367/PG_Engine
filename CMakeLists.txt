@@ -18,12 +18,14 @@ add_executable(PG_Engine
 
 target_include_directories(PG_Engine PRIVATE
     src/utils
+    lib/glm
 )
 
 add_definitions(-DUNICODE -D_UNICODE)
 
 #add_subdirectory(src/adapters/WindowSDL3Adapter)
 add_subdirectory(src/platform/SDL3Platform)
+add_subdirectory(src/adapters/GFXSDL3Adapter)
 
 add_custom_target(copy_compile_commands ALL
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/compile_commands.json"

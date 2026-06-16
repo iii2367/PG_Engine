@@ -1,4 +1,5 @@
 #include "SDL3WindowPlatform.h"
+#include <SDL3/SDL_platform.h>
 #include <SDL3/SDL_video.h>
 
 bool SDL3WindowPlatform::createWindow(int width, int height,
@@ -45,16 +46,10 @@ void SDL3WindowPlatform::getWindowSize(int &w, int &h) {
   }
 }
 
-void *SDL3WindowPlatform::getHandle() {
-  /*#if defined(_WIN32)
-    return (void *)SDL_GetProperty(SDL_GetWindowProperties(window),
-                                   SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-  #elif defined(linux)
-    return (void *)SDL_GetProperty(SDL_GetWindowProperties(window),
-                                   SDL_PROP_WINDOW_X11_WINDOW_NUMBER, nullptr);
-  #elif defined(APPLE)
-    return (void *)SDL_GetProperty(SDL_GetWindowProperties(window),
-                                   SDL_PROP_WINDOW_COCOA_WINDOW_POINTER,
-  nullptr); #endif
-  */
+WindowHandle SDL3WindowPlatform::getWindowHandle() {
+    WindowHandle wh{};
+    wh.type = TypeWindowHandle::SDL3;
+    wh.handle = window;
+    getWindowSize(wh.width, wh.height);
+    return wh;
 }
