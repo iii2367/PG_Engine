@@ -2,6 +2,7 @@
 #define IENGINE_H
 
 #include "../platform/IPlatform.h"
+#include "../ports/GFXPort/GFXPort.h"
 #include "../core/EventDispatcher/EventDispatcher.h"
 
 enum class EngineInitInfo {
@@ -10,6 +11,7 @@ enum class EngineInitInfo {
   isInputPlatform =     1 << 2,
   isWindowPlatform =    1 << 3,
   isEventDispatcher =   1 << 4,
+  isGFXAdapter =        1 << 5,
 };
 
 inline EngineInitInfo operator|(EngineInitInfo first, EngineInitInfo next) {
@@ -25,6 +27,7 @@ struct IEngine
     virtual ~IEngine() = default;
     virtual bool init(EngineInitInfo info) = 0;
     virtual IPlatform* getPlatform() const = 0;
+    virtual IGFXPort* getGFXAdapter() const = 0;
     virtual EventDispatcher* getEventDispatcher() const = 0;
 };
 

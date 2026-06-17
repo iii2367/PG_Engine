@@ -10,7 +10,7 @@ struct IGFXPort
 {
     virtual ~IGFXPort() = default;
 
-    virtual bool init(WindowHandle& handle) = 0;
+    virtual bool init(const WindowHandle& handle) = 0;
     virtual void quitGFX() = 0;
 
     virtual int addImage(const std::string& path, std::string& tag) = 0;

@@ -14,7 +14,7 @@ class GFXSDL3Adapter : public IGFXPort
 public:
     ~GFXSDL3Adapter() override;
 
-    bool init(WindowHandle& handle) override;
+    bool init(const WindowHandle& handle) override;
     void quitGFX() override;
 
     int addImage(const std::string& path, std::string& tag) override;
@@ -55,13 +55,14 @@ private:
         SDL_Texture* texture = nullptr;
 
         float alpha = 1.0f;
-        int blendMode = SDL_BLENDMODE_BLEND;
+        SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND;
 
         Vec2 position{0, 0};
         Vec2 scale{1, 1};
 
         bool visible = true;
     };
+
 
     struct GFXEntry
     {
@@ -80,7 +81,9 @@ private:
     void bindTag(int id, const std::string& tag);
     void removeFromTag(int id, const std::string& tag);
     std::vector<int> getIdsByTag(const std::string& tag);
-    GFXEntry* getById(int id);
 };
+
+extern "C" __declspec(dllexport) IGFXPort* getClass();
+extern "C" __declspec(dllexport) void destroyClass(IGFXPort* ptr);
 
 #endif

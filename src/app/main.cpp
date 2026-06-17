@@ -17,10 +17,22 @@ int main(int argc, char *argv[])
         auto input = engine->getPlatform()->getInput();
         auto audio = engine->getPlatform()->getAudio();
         auto eventDispatcher = engine->getEventDispatcher();
+        auto gfx = engine->getGFXAdapter();
+
+        base->init();
+        audio->initAudio();
 
         WindowInfo winInfo{};
+        winInfo.decorated = 1;
+        winInfo.resizable = 1;
         window->createWindow(winInfo);
-
+        
+/*
+*       gfx->init(window->getWindowHandle());
+*        std::string imageTag = "imt";
+*        int imid1 = gfx->addImage("image/image1.png", imageTag);
+*        gfx->drawImageById(imid1, {50,50,50,50});
+*/
         std::string audioTag = "Music";
         auto id1 = audio->addAudioStream("music/TestStream1.wav", audioTag);
         audio->loopAudioById(id1);
