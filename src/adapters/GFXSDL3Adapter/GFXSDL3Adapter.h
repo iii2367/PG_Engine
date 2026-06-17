@@ -14,20 +14,19 @@ class GFXSDL3Adapter : public IGFXPort
 {
 public:
     ~GFXSDL3Adapter() override;
-    SDL_Texture* tex;
-    SDL_FRect rect;
 
     bool init(WindowHandle handle) override;
     void quitGFX() override;
-    bool render() override;
+    bool renderFrameBegin() override;
+    bool renderFrameEnd() override;
 
-    int addImage(const std::string& path, std::string& tag) override;
+    int addImage(const std::string& path, std::string& tag, Rect rect) override;
     bool removeImage(int id) override;
 
     bool drawImageById(int id, Vec4 dst) override;
     bool drawImageByTag(const std::string& tag, Rect dst) override;
 
-    bool drawImageRegionById(int id, Rect src, Rect dst) override;
+    /*bool drawImageRegionById(int id, Rect src, Rect dst) override;
     bool drawImageRegionByTag(const std::string& tag, Rect src, Rect dst) override;
 
     bool drawRect(Rect r, Color c) override;
@@ -51,26 +50,17 @@ public:
     bool showImageById(int id) override;
     bool showImageByTag(const std::string& tag) override;
 
-    bool isImageVisibleById(int id) override;
+    bool isImageVisibleById(int id) override;*/
 
 private:
-    struct SDLImage
+    struct ImageEntry
     {
         SDL_Texture* texture = nullptr;
-
         float alpha = 1.0f;
         SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND;
-
         Vec2 position{0, 0};
         Vec2 scale{1, 1};
-
         bool visible = true;
-    };
-
-
-    struct GFXEntry
-    {
-        SDLImage image;
         std::string tag;
     };
 
@@ -79,8 +69,9 @@ private:
 
     int nextId = 1;
 
-    std::unordered_map<int, GFXEntry> entries;
+    std::unordered_map<int, ImageEntry> entries;
     std::unordered_map<std::string, std::vector<int>> tagMap;
+    //std::unordered_map<int, ImageEntry> inRender;
 
     void bindTag(int id, const std::string& tag);
     void removeFromTag(int id, const std::string& tag);

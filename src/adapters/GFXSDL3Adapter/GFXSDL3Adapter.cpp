@@ -1,4 +1,5 @@
 #include "GFXSDL3Adapter.h"
+#include <SDL3/SDL_blendmode.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3_image/SDL_image.h>
@@ -6,12 +7,12 @@
 
 GFXSDL3Adapter::~GFXSDL3Adapter()
 {
-
+    quitGFX();
 }
 
 bool GFXSDL3Adapter::init(WindowHandle handle)
 {
-
+    if (renderer) { return false; }
     if (handle.type != TypeWindowHandle::SDL3) { return false; }
 
     window = static_cast<SDL_Window*>(handle.handle);
@@ -22,52 +23,54 @@ bool GFXSDL3Adapter::init(WindowHandle handle)
     {
         SDL_Log("Renderer error: %s", SDL_GetError());
         return false;
-    }
-    
-    tex = IMG_LoadTexture(renderer, "F:/source/PG_Engine/build/Debug/bin/image/image1.png");
-    if (!tex)
-    {
-        SDL_Log("Texture error: %s", SDL_GetError());
-    puts("ggg");
-        return false;
-    }
-
-    rect = {200, 200, 500, 500};
-
+    }   
     return true;
 }
 void GFXSDL3Adapter::quitGFX()
 {
+    for (auto& [id, e] : entries)
+    {
+        SDL_DestroyTexture(e.texture);
+    }
+    
+    entries.clear();
+    tagMap.clear();
+
     if (renderer) { SDL_DestroyRenderer(renderer); }
+    renderer = nullptr;
     window = nullptr;
 }
-bool GFXSDL3Adapter::render() 
+bool GFXSDL3Adapter::renderFrameBegin() 
 {
     if (!renderer) { return false; }
 
-SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 0, 255, 50, 100);
+    SDL_RenderClear(renderer); 
+    //Рендер
+    //drawImageById(nextId-1, {400,400,50,50});
 
-    SDL_RenderTexture(renderer, tex, nullptr, &rect);
+    //SDL_RenderPresent(renderer);
+    return true;
+}
+bool GFXSDL3Adapter::renderFrameEnd() 
+{
+    if (!renderer) { return false; }
 
+    //SDL_SetRenderDrawColor(renderer, 0, 255, 50, 100);
+    //SDL_RenderClear(renderer); 
+    //Рендер
     SDL_RenderPresent(renderer);
-return true;
-
-
+    return true;
 }
 
-int GFXSDL3Adapter::addImage(const std::string& path, std::string& tag) 
+int GFXSDL3Adapter::addImage(const std::string& path, std::string& tag, Rect rect) 
 {
     SDL_Texture* tex = IMG_LoadTexture(renderer, path.c_str());
     if (!tex) { return -1; }
 
-    int id = nextId++;
+    int id = nextId++; 
 
-    GFXEntry entry;
-    entry.image.texture = tex;
-    entry.tag = tag;
-
-    entries[id] = entry;
+    entries[id] = {.texture=tex, .position={rect.x, rect.y}, .scale={rect.w, rect.h}, .tag=tag};
     bindTag(id, tag);
 
     return id;
@@ -77,7 +80,7 @@ bool GFXSDL3Adapter::removeImage(int id)
     auto it = entries.find(id);
     if (it == entries.end()) { return false; }
 
-    if (it->second.image.texture) { SDL_DestroyTexture(it->second.image.texture); }
+    if (it->second.texture) { SDL_DestroyTexture(it->second.texture); }
 
     removeFromTag(id, it->second.tag);
     entries.erase(it);
@@ -87,11 +90,11 @@ bool GFXSDL3Adapter::removeImage(int id)
 
 bool GFXSDL3Adapter::drawImageById(int id, Vec4 dst) 
 {
-
+    if (!renderer) { return false; }
     auto it = entries.find(id);
     if (it == entries.end()) { return false; }
 
-    auto& img = it->second.image;
+    auto& img = it->second;
     if (!img.texture || !img.visible) { return false; }
 
     SDL_SetTextureAlphaMod(img.texture, (Uint8)(img.alpha * 255));
@@ -107,6 +110,7 @@ bool GFXSDL3Adapter::drawImageById(int id, Vec4 dst)
 }
 bool GFXSDL3Adapter::drawImageByTag(const std::string& tag, Rect dst) 
 {
+    if (!renderer) { return false; }
     bool ok = true;
 
     for (int id : getIdsByTag(tag))
@@ -116,7 +120,7 @@ bool GFXSDL3Adapter::drawImageByTag(const std::string& tag, Rect dst)
 
     return ok;
 }
-
+/*
 bool GFXSDL3Adapter::drawImageRegionById(int id, Rect src, Rect dst)  // помилка
 {
     auto it = entries.find(id);
@@ -210,7 +214,7 @@ bool GFXSDL3Adapter::isImageVisibleById(int id)
 
     return it->second.image.visible;
 }
-
+*/
 void GFXSDL3Adapter::bindTag(int id, const std::string& tag)
 {
     tagMap[tag].push_back(id);
