@@ -1,6 +1,7 @@
 #include "SDL3WindowPlatform.h"
 #include <SDL3/SDL_platform.h>
 #include <SDL3/SDL_video.h>
+#include <memory>
 
 bool SDL3WindowPlatform::createWindow(const WindowInfo& info) {
     if (window || render) { return false; }

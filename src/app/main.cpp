@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     {
         Utils::Module<Engine> engine;
         engine.load("Engine.dll", "getClass", "destroyClass");
-        engine->init(EngineInitInfo::isBasePlatform | EngineInitInfo::isWindowPlatform | EngineInitInfo::isInputPlatform | EngineInitInfo::isAudioPlatform | EngineInitInfo::isEventDispatcher);
+        engine->init(EngineInitInfo::isBasePlatform | EngineInitInfo::isWindowPlatform | EngineInitInfo::isInputPlatform | EngineInitInfo::isAudioPlatform | EngineInitInfo::isEventDispatcher | EngineInitInfo::isGFXAdapter);
 
         auto platform = engine->getPlatform();
         auto base = engine->getPlatform()->getBase();
@@ -27,12 +27,9 @@ int main(int argc, char *argv[])
         winInfo.resizable = 1;
         window->createWindow(winInfo);
         
-/*
-*       gfx->init(window->getWindowHandle());
-*        std::string imageTag = "imt";
-*        int imid1 = gfx->addImage("image/image1.png", imageTag);
-*        gfx->drawImageById(imid1, {50,50,50,50});
-*/
+        auto handle = window->getWindowHandle();
+std::cout << gfx->init(handle) << std::endl;
+
         std::string audioTag = "Music";
         auto id1 = audio->addAudioStream("music/TestStream1.wav", audioTag);
         audio->loopAudioById(id1);
@@ -43,6 +40,7 @@ int main(int argc, char *argv[])
             base->update(16);
             runnind = input->pollEvents(*eventDispatcher);
             window->renderFrame();
+            gfx->render();
         }
         
         window->destroyWindow();

@@ -1,14 +1,17 @@
 #include "GFXSDL3Adapter.h"
+#include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
+#include <SDL3_image/SDL_image.h>
+#include <iostream>
 
 GFXSDL3Adapter::~GFXSDL3Adapter()
 {
 
 }
 
-bool GFXSDL3Adapter::init(const WindowHandle& handle)
+bool GFXSDL3Adapter::init(WindowHandle handle)
 {
-puts("start init gfx");
+
     if (handle.type != TypeWindowHandle::SDL3) { return false; }
 
     window = static_cast<SDL_Window*>(handle.handle);
@@ -20,7 +23,17 @@ puts("start init gfx");
         SDL_Log("Renderer error: %s", SDL_GetError());
         return false;
     }
-puts("eng init gfx");
+    
+    tex = IMG_LoadTexture(renderer, "F:/source/PG_Engine/build/Debug/bin/image/image1.png");
+    if (!tex)
+    {
+        SDL_Log("Texture error: %s", SDL_GetError());
+    puts("ggg");
+        return false;
+    }
+
+    rect = {200, 200, 500, 500};
+
     return true;
 }
 void GFXSDL3Adapter::quitGFX()
@@ -28,10 +41,23 @@ void GFXSDL3Adapter::quitGFX()
     if (renderer) { SDL_DestroyRenderer(renderer); }
     window = nullptr;
 }
+bool GFXSDL3Adapter::render() 
+{
+    if (!renderer) { return false; }
+
+SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    SDL_RenderTexture(renderer, tex, nullptr, &rect);
+
+    SDL_RenderPresent(renderer);
+return true;
+
+
+}
 
 int GFXSDL3Adapter::addImage(const std::string& path, std::string& tag) 
 {
-puts("add image statr");
     SDL_Texture* tex = IMG_LoadTexture(renderer, path.c_str());
     if (!tex) { return -1; }
 
@@ -43,7 +69,7 @@ puts("add image statr");
 
     entries[id] = entry;
     bindTag(id, tag);
-puts("add image end");
+
     return id;
 }
 bool GFXSDL3Adapter::removeImage(int id) 
@@ -61,7 +87,7 @@ bool GFXSDL3Adapter::removeImage(int id)
 
 bool GFXSDL3Adapter::drawImageById(int id, Vec4 dst) 
 {
-puts("start draw image");
+
     auto it = entries.find(id);
     if (it == entries.end()) { return false; }
 
@@ -76,7 +102,7 @@ puts("start draw image");
     rect.y = dst.y;
     rect.w = dst.z;
     rect.h = dst.w;
-puts("end draw image");
+
     return SDL_RenderTexture(renderer, img.texture, nullptr, &rect);
 }
 bool GFXSDL3Adapter::drawImageByTag(const std::string& tag, Rect dst) 

@@ -4,6 +4,7 @@
 #include "../../ports/GFXPort/GFXPort.h"
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_rect.h>
 #include <SDL3_image/SDL_image.h>
 #include <unordered_map>
 #include <vector>
@@ -13,9 +14,12 @@ class GFXSDL3Adapter : public IGFXPort
 {
 public:
     ~GFXSDL3Adapter() override;
+    SDL_Texture* tex;
+    SDL_FRect rect;
 
-    bool init(const WindowHandle& handle) override;
+    bool init(WindowHandle handle) override;
     void quitGFX() override;
+    bool render() override;
 
     int addImage(const std::string& path, std::string& tag) override;
     bool removeImage(int id) override;
