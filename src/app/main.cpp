@@ -39,15 +39,27 @@ int main(int argc, char *argv[])
         audio->loopAudioById(id1);
         
         auto handle = window->getWindowHandle();
-        gfx->init(handle);
-        std::string imTag = "Player";
-        Vec4 dst{400,300,50,50};
-        int imId = gfx->addImage("image/image1.png", imTag, {dst.x,dst.y,dst.z,dst.w});
+        if(!gfx->init(handle, true)) { throw std::runtime_error("failed to init gfx"); }
+        Vec4 dst{400,300,200,200};
+        int imId = gfx->loadImage("image/image1.png");
         std::cout << imId << '\n';
-        eventDispatcher->subscribe(EventType::PG_Key_Down_W, [&](const Event& e){dst.x += 5;});
-        eventDispatcher->subscribe(EventType::PG_Key_Down_S, [&](const Event& e){dst.x -= 5;});
+        bool hi = true;
+        eventDispatcher->subscribe(EventType::PG_Key_Down_D, [&](const Event& e){dst.x += 5;});
+        eventDispatcher->subscribe(EventType::PG_Key_Down_A, [&](const Event& e){dst.x -= 5;});
+        eventDispatcher->subscribe(EventType::PG_Key_Down_S, [&](const Event& e){dst.y += 5;});
+        eventDispatcher->subscribe(EventType::PG_Key_Down_W, [&](const Event& e){dst.y -= 5;});
+        eventDispatcher->subscribe(EventType::PG_Key_Down_Q, [&](const Event& e){if (hi) {hi=false;} else {hi=true;}});
         std::atomic<bool> runningRender{true};
-        std::thread renderThread([&]{while (runningRender){ gfx->renderFrameBegin(); gfx->drawImageById(imId, dst); gfx->renderFrameEnd();}});
+        float an = 0.5;
+        std::thread renderThread([&]{while (runningRender)
+        { 
+            an+=1;
+            gfx->beginFrame({1.0f,1.0f,1.0f,1.0f});
+            //gfx->drawRect({50,50,50,50}, {0.0f,1.0f,1.0f,1.0f});
+            if (hi){gfx->drawImageById(imId, {dst.x, dst.y, dst.z, dst.w}, an);}
+            gfx->drawRect({50,50,50,50}, {0.0f,1.0f,1.0f,0.5f});
+            gfx->endFrame();}
+        });
         
         bool runnind = 1;
         while (runnind)
