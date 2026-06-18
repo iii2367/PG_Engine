@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
         eventDispatcher->subscribe(EventType::PG_Key_Down_A, [&](const Event& e){dst.x -= 5;});
         eventDispatcher->subscribe(EventType::PG_Key_Down_S, [&](const Event& e){dst.y += 5;});
         eventDispatcher->subscribe(EventType::PG_Key_Down_W, [&](const Event& e){dst.y -= 5;});
+        eventDispatcher->subscribe(EventType::PG_Key_Down_E, [&](const Event& e){window->hide();});
         eventDispatcher->subscribe(EventType::PG_Key_Down_Q, [&](const Event& e){if (hi) {hi=false;} else {hi=true;}});
         std::atomic<bool> runningRender{true};
         float an = 0.5;
