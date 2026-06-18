@@ -18,7 +18,7 @@
         "CMAKE_BUILD_TYPE": "Debug", 
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON", 
         "CMAKE_CXX_COMPILER": "clang++",
-        "CMAKE_PREFIX_PATH": "${sourceDir}/lib/SDL3;${sourceDir}/lib/SDL3_mixer;${sourceDir}/lib/SDL3_image"
+        "CMAKE_PREFIX_PATH": "${sourceDir}/lib/SDL3;${sourceDir}/lib/SDL3_mixer;${sourceDir}/lib/SDL3_image;${sourceDir}/lib/SDL3_ttf"
         
       }
     },
@@ -32,7 +32,7 @@
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "CMAKE_CXX_COMPILER": "clang++",
-        "CMAKE_PREFIX_PATH": "${sourceDir}/lib/SDL3;${sourceDir}/lib/SDL3_mixer;${sourceDir}/lib/SDL3_image"
+        "CMAKE_PREFIX_PATH": "${sourceDir}/lib/SDL3;${sourceDir}/lib/SDL3_mixer;${sourceDir}/lib/SDL3_image;${sourceDir}/lib/SDL3_ttf"
       }
     }
   ],
