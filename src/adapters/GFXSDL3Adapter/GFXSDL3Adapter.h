@@ -22,10 +22,12 @@ public:
     int loadImage(const std::string& path) override;
     bool unloadImage(int id) override;
 
-    bool drawImageById(int id, Rect dst, float angle) override;
-    bool drawImageRegionById(int id, Rect src, Rect dst, float angle) override;
-    bool drawRect(Rect rect, Color c) override;
+    bool drawImageById(int id, Rect dst, float angle, FlipMode flip) override;
+    bool drawImageRegionById(int id, Rect src, Rect dst, float angle, FlipMode flip) override;
 
+    bool drawRect(Rect rect, Color c) override;
+    bool drawRectOutline(Rect rect, Color color) override;
+    bool drawLine(Vec2 a, Vec2 b, Color color) override;
 private:
     struct ImageEntry
     {
@@ -37,6 +39,8 @@ private:
 
     int nextId = 1;
     std::unordered_map<int, ImageEntry> entries;
+
+    SDL_FlipMode toSDLFlip(FlipMode flip);
 };
 
 extern "C" __declspec(dllexport) IGFXPort* getClass();

@@ -56,8 +56,10 @@ int main(int argc, char *argv[])
             an+=1;
             gfx->beginFrame({1.0f,1.0f,1.0f,1.0f});
             //gfx->drawRect({50,50,50,50}, {0.0f,1.0f,1.0f,1.0f});
-            if (hi){gfx->drawImageById(imId, {dst.x, dst.y, dst.z, dst.w}, an);}
+            if (hi){gfx->drawImageById(imId, {dst.x, dst.y, dst.z, dst.w}, an, FlipMode::VERTICAL);}
             gfx->drawRect({50,50,50,50}, {0.0f,1.0f,1.0f,0.5f});
+            gfx->drawLine({100,100}, {100,500}, {1.0f, 0.0f, 0.0f, 1.0});
+            gfx->drawRectOutline({500,500,200,100}, {0.0f,0.0f,1.0f,1.0f});
             gfx->endFrame();}
         });
         

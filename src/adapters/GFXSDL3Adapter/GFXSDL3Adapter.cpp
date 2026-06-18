@@ -91,7 +91,7 @@ bool GFXSDL3Adapter::unloadImage(int id)
 
 /*============================================================================================*/
 
-bool GFXSDL3Adapter::drawImageById(int id, Rect dst, float angle) 
+bool GFXSDL3Adapter::drawImageById(int id, Rect dst, float angle, FlipMode flip) 
 {
     if (!renderer) { return false; }
 
@@ -104,14 +104,15 @@ bool GFXSDL3Adapter::drawImageById(int id, Rect dst, float angle)
 
     SDL_FRect rect{dst.x, dst.y, dst.w, dst.h};
 
-    if (angle != 0)
+    SDL_FlipMode sdlFlip = toSDLFlip(flip);
+    if (angle != 0 || flip != FlipMode::NONE)
     {
         SDL_FPoint center{ rect.w * 0.5f, rect.h * 0.5f };
-        return SDL_RenderTextureRotated(renderer, img.texture, nullptr, &rect, angle, &center, SDL_FLIP_NONE);
+        return SDL_RenderTextureRotated(renderer, img.texture, nullptr, &rect, angle, &center, sdlFlip);
     }
     return SDL_RenderTexture(renderer, img.texture, nullptr, &rect);
 }
-bool GFXSDL3Adapter::drawImageRegionById(int id, Rect src, Rect dst, float angle)  
+bool GFXSDL3Adapter::drawImageRegionById(int id, Rect src, Rect dst, float angle, FlipMode flip)  
 {
     if (!renderer) { return false; }
 
@@ -124,14 +125,18 @@ bool GFXSDL3Adapter::drawImageRegionById(int id, Rect src, Rect dst, float angle
     SDL_FRect s{ src.x, src.y, src.w, src.h };
     SDL_FRect d{ dst.x, dst.y, dst.w, dst.h }; 
 
-    if (angle != 0)
+    SDL_FlipMode sdlFlip = toSDLFlip(flip);
+    if (angle != 0 || flip != FlipMode::NONE)
     {
         SDL_FPoint center{ d.w * 0.5f, d.h * 0.5f };
-        return SDL_RenderTextureRotated(renderer, img.texture, &s, &d, angle, &center, SDL_FLIP_NONE);
+        return SDL_RenderTextureRotated(renderer, img.texture, &s, &d, angle, &center, sdlFlip);
     }
 
     return SDL_RenderTexture(renderer, img.texture, &s, &d);
 }
+
+/*============================================================================================*/
+
 bool GFXSDL3Adapter::drawRect(Rect rect, Color c)
 {
     if (!renderer) { return false; }
@@ -139,10 +144,37 @@ bool GFXSDL3Adapter::drawRect(Rect rect, Color c)
     SDL_FRect frect{rect.x, rect.y, rect.w, rect.h};
     return SDL_RenderFillRect(renderer, &frect);
 }
+bool GFXSDL3Adapter::drawLine(Vec2 a, Vec2 b, Color color)
+{
+    if (!renderer) { return false; }
+
+    SDL_SetRenderDrawColor(renderer, (Uint8)(color.r * 255), (Uint8)(color.g * 255), (Uint8)(color.b * 255), (Uint8)(color.a * 255));
+    return SDL_RenderLine(renderer, a.x, a.y, b.x, b.y);
+}
+bool GFXSDL3Adapter::drawRectOutline(Rect rect, Color color)
+{
+    if (!renderer) { return false; }
+
+    SDL_SetRenderDrawColor(renderer, (Uint8)(color.r * 255), (Uint8)(color.g * 255), (Uint8)(color.b * 255), (Uint8)(color.a * 255));
+    SDL_FRect r{ rect.x, rect.y, rect.w, rect.h};
+
+    return SDL_RenderRect(renderer, &r);
+}
 
 /*============================================================================================*/
 
+SDL_FlipMode GFXSDL3Adapter::toSDLFlip(FlipMode flip)
+{
+    switch (flip)
+    {
+        case FlipMode::HORIZONTAL: { return SDL_FLIP_HORIZONTAL; }
 
+        case FlipMode::VERTICAL: { return SDL_FLIP_VERTICAL; }
+
+        case FlipMode::NONE:
+        default: { return SDL_FLIP_NONE; }
+    }
+}
 
 extern "C" __declspec(dllexport) IGFXPort* getClass() { return new GFXSDL3Adapter(); };
 extern "C" __declspec(dllexport) void destroyClass(IGFXPort* ptr) { delete ptr; };
