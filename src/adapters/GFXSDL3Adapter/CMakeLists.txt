@@ -10,8 +10,9 @@ add_library(GFXSDL3Adapter SHARED
 
 find_package(SDL3 REQUIRED CONFIG)
 find_package(SDL3_image REQUIRED CONFIG)
+find_package(SDL3_ttf REQUIRED CONFIG)
 
-target_link_libraries(GFXSDL3Adapter PRIVATE SDL3::SDL3 SDL3_image::SDL3_image)
+target_link_libraries(GFXSDL3Adapter PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf)
 
 target_include_directories(GFXSDL3Adapter PRIVATE
     ../../../lib/glm
@@ -30,3 +31,10 @@ add_custom_command(TARGET GFXSDL3Adapter POST_BUILD
     $<TARGET_FILE:SDL3_image::SDL3_image>
     ${CMAKE_BINARY_DIR}/bin
 )
+
+add_custom_command(TARGET GFXSDL3Adapter POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:SDL3_ttf::SDL3_ttf>
+    ${CMAKE_BINARY_DIR}/bin
+)
+

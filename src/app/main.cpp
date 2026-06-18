@@ -43,6 +43,16 @@ int main(int argc, char *argv[])
         Vec4 dst{400,300,200,200};
         int imId = gfx->loadImage("image/image1.png");
         std::cout << imId << '\n';
+        
+        auto deviceCount = gfx->getRenderDevices();
+        for (auto device : deviceCount)
+        {
+            std::cout << device.index << '\t' << device.name << '\n';
+        }
+
+        int fontId = gfx->loadFont("font/ChelseaMarket.ttf",22);
+        int helloText = gfx->createText(fontId, "Hello World", {0,0,0,0});
+
         bool hi = true;
         eventDispatcher->subscribe(EventType::PG_Key_Down_D, [&](const Event& e){dst.x += 5;});
         eventDispatcher->subscribe(EventType::PG_Key_Down_A, [&](const Event& e){dst.x -= 5;});
@@ -60,6 +70,7 @@ int main(int argc, char *argv[])
             gfx->drawRect({50,50,50,50}, {0.0f,1.0f,1.0f,0.5f});
             gfx->drawLine({100,100}, {100,500}, {1.0f, 0.0f, 0.0f, 1.0});
             gfx->drawRectOutline({500,500,200,100}, {0.0f,0.0f,1.0f,1.0f});
+            gfx->drawTextById(helloText,{100,100,0,0});
             gfx->endFrame();}
         });
         
