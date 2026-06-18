@@ -5,16 +5,26 @@
 #include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_oldnames.h>
+#include <SDL3/SDL_scancode.h>
 
-
-void SDL3InputPlatform::pollState(bool& w, bool& a, bool& s, bool& d)
-{
-    const bool* state = SDL_GetKeyboardState(nullptr);
-
-    w = state[SDL_SCANCODE_W];
-    a = state[SDL_SCANCODE_A];
-    s = state[SDL_SCANCODE_S];
-    d = state[SDL_SCANCODE_D];
+void SDL3InputPlatform::pollState(pollStateStruct &st) {
+  const bool *state = SDL_GetKeyboardState(nullptr);
+  SDL_MouseButtonFlags mouseState = SDL_GetMouseState(nullptr, nullptr);
+  st.w = state[SDL_SCANCODE_W];
+  st.a = state[SDL_SCANCODE_A];
+  st.s = state[SDL_SCANCODE_S];
+  st.d = state[SDL_SCANCODE_D];
+  st.q = state[SDL_SCANCODE_Q];
+  st.r = state[SDL_SCANCODE_R];
+  st.e = state[SDL_SCANCODE_E];
+  st.f = state[SDL_SCANCODE_F];
+  st.c = state[SDL_SCANCODE_C];
+  st.x = state[SDL_SCANCODE_X];
+  st.z = state[SDL_SCANCODE_Z];
+  st.ctrl = state[SDL_SCANCODE_LCTRL];
+  st.Shift = state[SDL_SCANCODE_LSHIFT];
+  st.LMouseButton = (mouseState & SDL_BUTTON_LMASK);
+  st.RMouseButton = (mouseState & SDL_BUTTON_RMASK);
 }
 
 bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
@@ -64,15 +74,16 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
         e.type = EventType::PG_Key_Down_D;
         dispatcher.dispatch(e);
       }
-      */getMousePosition(e.x, e.y);/*
-      if (event.key.mod & SDL_KMOD_LCTRL) {
-        e.type = EventType::PG_Key_Down_LCTRL;
-        dispatcher.dispatch(e);
-      }
-      if (event.key.mod & SDL_KMOD_LSHIFT) {
-        e.type = EventType::PG_Key_Down_LSHIFT;
-        dispatcher.dispatch(e);
-      }*/
+      */
+      getMousePosition(e.x, e.y); /*
+     if (event.key.mod & SDL_KMOD_LCTRL) {
+       e.type = EventType::PG_Key_Down_LCTRL;
+       dispatcher.dispatch(e);
+     }
+     if (event.key.mod & SDL_KMOD_LSHIFT) {
+       e.type = EventType::PG_Key_Down_LSHIFT;
+       dispatcher.dispatch(e);
+     }*/
       switch (event.key.key) {
 
       case SDLK_Q: {
