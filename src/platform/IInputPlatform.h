@@ -6,6 +6,7 @@
 struct IInputPlatform {
   virtual ~IInputPlatform() = default;
 
+virtual void pollState(bool& w, bool& a, bool& s, bool& d) = 0;
   virtual bool pollEvents(EventDispatcher &dispatcher) = 0;
 
   virtual bool isKeyPressed(int keyCode) = 0;

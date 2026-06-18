@@ -6,6 +6,17 @@
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_oldnames.h>
 
+
+void SDL3InputPlatform::pollState(bool& w, bool& a, bool& s, bool& d)
+{
+    const bool* state = SDL_GetKeyboardState(nullptr);
+
+    w = state[SDL_SCANCODE_W];
+    a = state[SDL_SCANCODE_A];
+    s = state[SDL_SCANCODE_S];
+    d = state[SDL_SCANCODE_D];
+}
+
 bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
@@ -36,7 +47,7 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
 
       // key.mod нужно отдельно потому что дефайн имеет тот же код
       // + к этому эти кнопки могут использоваться в комбинациях
-      const bool *state = SDL_GetKeyboardState(nullptr);
+      /*const bool *state = SDL_GetKeyboardState(nullptr);
       if (state[SDL_SCANCODE_W]) {
         e.type = EventType::PG_Key_Down_W; // Ми перекладаємо івент на наш
         dispatcher.dispatch(e);
@@ -53,7 +64,7 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
         e.type = EventType::PG_Key_Down_D;
         dispatcher.dispatch(e);
       }
-      getMousePosition(e.x, e.y);
+      */getMousePosition(e.x, e.y);/*
       if (event.key.mod & SDL_KMOD_LCTRL) {
         e.type = EventType::PG_Key_Down_LCTRL;
         dispatcher.dispatch(e);
@@ -61,7 +72,7 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
       if (event.key.mod & SDL_KMOD_LSHIFT) {
         e.type = EventType::PG_Key_Down_LSHIFT;
         dispatcher.dispatch(e);
-      }
+      }*/
       switch (event.key.key) {
 
       case SDLK_Q: {

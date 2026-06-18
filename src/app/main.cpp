@@ -54,10 +54,10 @@ int main(int argc, char *argv[])
         int helloText = gfx->createText(fontId, "Hello World", {0,0,0,0});
 
         bool hi = true;
-        eventDispatcher->subscribe(EventType::PG_Key_Down_D, [&](const Event& e){dst.x += 5;});
+        /*eventDispatcher->subscribe(EventType::PG_Key_Down_D, [&](const Event& e){dst.x += 5;});
         eventDispatcher->subscribe(EventType::PG_Key_Down_A, [&](const Event& e){dst.x -= 5;});
         eventDispatcher->subscribe(EventType::PG_Key_Down_S, [&](const Event& e){dst.y += 5;});
-        eventDispatcher->subscribe(EventType::PG_Key_Down_W, [&](const Event& e){dst.y -= 5;});
+        eventDispatcher->subscribe(EventType::PG_Key_Down_W, [&](const Event& e){dst.y -= 5;});*/
         eventDispatcher->subscribe(EventType::PG_Key_Down_E, [&](const Event& e){window->hide();});
         eventDispatcher->subscribe(EventType::PG_Key_Down_Q, [&](const Event& e){if (hi) {hi=false;} else {hi=true;}});
         std::atomic<bool> runningRender{true};
@@ -75,12 +75,18 @@ int main(int argc, char *argv[])
             gfx->endFrame();}
         });
         
+bool a=0,s=0,d=0,w=0;
         bool runnind = 1;
         while (runnind)
         {
             base->update(16);
             runnind = input->pollEvents(*eventDispatcher);
             //window->renderFrame(); 
+input->pollState(w, a, s, d);
+if (d) {dst.x+=5;d=0;}
+if (a) {dst.x-=5;a=0;}
+if (s) {dst.y+=5;s=0;}
+if (w) {dst.y-=5;w=0;}
         }
         runningRender = 0;
         renderThread.join(); 

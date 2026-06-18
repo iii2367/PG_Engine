@@ -8,7 +8,7 @@
 class SDL3InputPlatform : public IInputPlatform {
 public:
   bool pollEvents(EventDispatcher &dispatcher) override;
-
+    void pollState(bool& w, bool& a, bool& s, bool& d) override;
   bool isKeyPressed(int keyCode) override;
   bool isMouseButtonPressed(int button) override;
   void getMousePosition(float &x, float &y) override;
