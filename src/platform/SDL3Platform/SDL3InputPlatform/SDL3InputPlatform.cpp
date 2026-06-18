@@ -1,6 +1,7 @@
 #include "SDL3InputPlatform.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_events.h>
+#include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_oldnames.h>
@@ -32,9 +33,26 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
     }
     case SDL_EVENT_KEY_DOWN: // Наш івент якщо кнопка натистута
     {
+
       // key.mod нужно отдельно потому что дефайн имеет тот же код
       // + к этому эти кнопки могут использоваться в комбинациях
-
+      const bool *state = SDL_GetKeyboardState(nullptr);
+      if (state[SDL_SCANCODE_W]) {
+        e.type = EventType::PG_Key_Down_W; // Ми перекладаємо івент на наш
+        dispatcher.dispatch(e);
+      }
+      if (state[SDL_SCANCODE_A]) {
+        e.type = EventType::PG_Key_Down_A;
+        dispatcher.dispatch(e);
+      }
+      if (state[SDL_SCANCODE_S]) {
+        e.type = EventType::PG_Key_Down_S;
+        dispatcher.dispatch(e);
+      }
+      if (state[SDL_SCANCODE_D]) {
+        e.type = EventType::PG_Key_Down_D;
+        dispatcher.dispatch(e);
+      }
       getMousePosition(e.x, e.y);
       if (event.key.mod & SDL_KMOD_LCTRL) {
         e.type = EventType::PG_Key_Down_LCTRL;
@@ -45,26 +63,7 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
         dispatcher.dispatch(e);
       }
       switch (event.key.key) {
-      case SDLK_W:
-        e.type = EventType::PG_Key_Down_W; // Ми перекладаємо івент на наш
-        dispatcher.dispatch(
-            e); // і запускаємо обробку події якщо є підписка то вона спрацює
-        break;
-      case SDLK_A: {
-        e.type = EventType::PG_Key_Down_A;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_S: {
-        e.type = EventType::PG_Key_Down_S;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_D: {
-        e.type = EventType::PG_Key_Down_D;
-        dispatcher.dispatch(e);
-        break;
-      }
+
       case SDLK_Q: {
         e.type = EventType::PG_Key_Down_Q;
         dispatcher.dispatch(e);
@@ -245,12 +244,13 @@ bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
         dispatcher.dispatch(e);
         break;
       }
+      case SDL_EVENT_MOUSE_MOTION: {
+        getMousePosition(e.x, e.y);
+        e.type = EventType::PG_Mouse_Move;
+        dispatcher.dispatch(e);
+        break;
       }
-      break;
-    case SDL_EVENT_MOUSE_MOTION:
-      getMousePosition(e.x, e.y);
-      e.type = EventType::PG_Mouse_Move;
-      dispatcher.dispatch(e);
+      }
       break;
     }
     }
