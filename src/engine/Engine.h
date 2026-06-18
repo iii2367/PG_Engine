@@ -7,6 +7,7 @@
 class Engine : public IEngine{
   EventDispatcher* eventDispatcher = nullptr;
   Utils::Module<IPlatform> platform;
+  Utils::Module<IGFXPort> gfx;
 
 public:
   Engine() = default;
@@ -17,14 +18,11 @@ public:
   Engine(Engine &&) = default;
   Engine &operator=(Engine&&) = default;
 
-  bool init(EngineInitInfo info);
+  bool init(EngineInitInfo info) override;
 
-  IPlatform* getPlatform() const;
-  /*IBasePlatform* getBasePlatform() const;
-  IAudioPlatform* getAudioPlatform() const;
-  IInputPlatform* getInputPlatform() const;
-  IWindowPlatform* getWindowPlatform() const;*/
-  EventDispatcher* getEventDispatcher() const;
+  IPlatform* getPlatform() const override;
+  IGFXPort* getGFXAdapter() const override; 
+  EventDispatcher* getEventDispatcher() const override;
 };
 
 extern "C" __declspec(dllexport) Engine* getClass();

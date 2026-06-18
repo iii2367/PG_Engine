@@ -24,3 +24,9 @@ add_custom_command(TARGET GFXSDL3Adapter POST_BUILD
     $<TARGET_FILE:SDL3::SDL3>
     ${CMAKE_BINARY_DIR}/bin
 )
+
+add_custom_command(TARGET GFXSDL3Adapter POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:SDL3_image::SDL3_image>
+    ${CMAKE_BINARY_DIR}/bin
+)

@@ -9,4 +9,8 @@ add_library(Engine SHARED
     ../core/EventDispatcher/EventDispatcher.cpp
 )
 
+target_include_directories(Engine PRIVATE
+    ../../lib/glm
+)
+
 add_definitions(-DUNICODE -D_UNICODE)
