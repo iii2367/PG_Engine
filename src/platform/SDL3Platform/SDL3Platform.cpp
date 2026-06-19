@@ -8,7 +8,7 @@ SDL3Platform::~SDL3Platform()
     if (window) { delete window; }
     if (input) { delete input; }
     if (audio) { delete audio; }
-    SDL_Quit();
+    shutdown();
 }
 
 bool SDL3Platform::init()
