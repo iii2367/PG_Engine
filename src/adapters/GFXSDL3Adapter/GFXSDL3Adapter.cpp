@@ -17,18 +17,20 @@ bool GFXSDL3Adapter::init(WindowHandle handle, bool vsync)
     window = static_cast<SDL_Window*>(handle.handle);
     if (!window) { return false; }
 
-    renderer = SDL_CreateRenderer(window, nullptr);
-    if (!renderer)
-    {
-        SDL_Log("Renderer error: %s", SDL_GetError());
-        return false;
-    }   
     if (TTF_Init() == false)
     {
         SDL_DestroyRenderer(renderer);
         renderer = nullptr;
         return false;
     }
+
+    renderer = SDL_CreateRenderer(window, nullptr);
+    if (!renderer)
+    {
+        SDL_Log("Renderer error: %s", SDL_GetError());
+        return false;
+    }   
+
     if (vsync) 
     { 
         if (!SDL_SetRenderVSync(renderer, 1))
@@ -48,18 +50,20 @@ bool GFXSDL3Adapter::init(WindowHandle handle, bool vsync, int driverIndex)
     window = static_cast<SDL_Window*>(handle.handle);
     if (!window) { return false; }
 
-    renderer = SDL_CreateRenderer(window, SDL_GetRenderDriver(driverIndex)); 
-    if (!renderer)
-    {
-        SDL_Log("Renderer error: %s", SDL_GetError());
-        return false;
-    }   
     if (TTF_Init() == false)
     {
         SDL_DestroyRenderer(renderer);
         renderer = nullptr;
         return false; 
     }
+
+    renderer = SDL_CreateRenderer(window, SDL_GetRenderDriver(driverIndex)); 
+    if (!renderer)
+    {
+        SDL_Log("Renderer error: %s", SDL_GetError());
+        return false;
+    }   
+
     if (vsync) 
     { 
         if (!SDL_SetRenderVSync(renderer, 1))
@@ -282,7 +286,7 @@ void GFXSDL3Adapter::unloadFont(int id)
 }
 int GFXSDL3Adapter::createText(int fontId, const std::string& text, Color color)
 {
-    if (!renderer) { return false; }
+    if (!renderer) { return -1; }
     auto fit = fonts.find(fontId);
 
     if (fit == fonts.end()) { return -1; }
@@ -353,8 +357,8 @@ bool GFXSDL3Adapter::updateText(int textId, const std::string& newText)
 {
     auto tit = texts.find(textId);
 
-    if (tit->second.text == newText) { return true; }
     if (tit == texts.end()) { return false; }
+    if (tit->second.text == newText) { return true; }
 
     auto fit = fonts.find(tit->second.fontId);
 

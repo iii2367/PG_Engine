@@ -4,12 +4,23 @@
 #include "../core/EventDispatcher/EventDispatcher.h"
 
 struct pollStateStruct {
-  bool w, a, s, d, q, r, e, f, c, x, z, Shift, ctrl, LMouseButton, RMouseButton;
+  bool W = false;
+  bool A = false;
+  bool S = false;
+  bool D = false;
+  bool Q = false;
+  bool R = false; 
+  bool E = false; 
+  bool F = false; 
+  bool C = false;
+  bool X = false; 
+  bool Z = false;
+  bool LShift = false; 
+  bool LCtrl = false; 
+  bool LMouseButton = false;
+  bool RMouseButton = false;
 
-  pollStateStruct() {
-    w = a = s = d = q = r = e = f = c = x = z = Shift = ctrl = LMouseButton =
-        RMouseButton = false;
-  }
+
 };
 
 struct IInputPlatform {
