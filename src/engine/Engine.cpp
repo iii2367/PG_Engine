@@ -21,8 +21,8 @@ bool Engine::init(EngineInitInfo info)
   return true;
 }
 
-IPlatform *Engine::getPlatform() const { return platform.getInstance(); } 
-IGFXPort* Engine::getGFXAdapter() const { return gfx.getInstance(); }
+IPlatform *Engine::getPlatform() const { return platform.get(); } 
+IGFXPort* Engine::getGFXAdapter() const { return gfx.get(); }
 EventDispatcher *Engine::getEventDispatcher() const { return eventDispatcher; }
 
 extern "C" __declspec(dllexport) Engine* getClass() { return new Engine(); }
