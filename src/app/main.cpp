@@ -9,20 +9,17 @@ int main(int argc, char *argv[]) {
   try {
     Utils::Module<Engine> engine;
     engine.load("Engine.dll", "getClass", "destroyClass");
-    engine->init(
-        EngineInitInfo::isBasePlatform | EngineInitInfo::isWindowPlatform |
-        EngineInitInfo::isInputPlatform | EngineInitInfo::isAudioPlatform |
-        EngineInitInfo::isEventDispatcher | EngineInitInfo::isGFXAdapter);
+    engine->init();
+
 
     auto platform = engine->getPlatform();
-    auto base = engine->getPlatform()->getBase();
+    platform->init();
     auto window = engine->getPlatform()->getWindow();
     auto input = engine->getPlatform()->getInput();
     auto audio = engine->getPlatform()->getAudio();
     auto eventDispatcher = engine->getEventDispatcher();
     auto gfx = engine->getGFXAdapter();
 
-    base->init();
     audio->initAudio();
 
     WindowInfo winInfo{};
@@ -113,7 +110,7 @@ if (st.A) { dst.x -= (st.LShift ? 25 : 5); }
 if (st.D) { dst.x += (st.LShift ? 25 : 5); } };
     bool runnind = 1;
     while (runnind) {
-      base->update(16);
+      std::this_thread::sleep_for(std::chrono::milliseconds(16));
       runnind = input->pollEvents(*eventDispatcher);
       // window->renderFrame();
       input->pollState(st);
@@ -122,7 +119,7 @@ runMove(st);
     runningRender = 0;
     renderThread.join();
     window->destroyWindow();
-    base->shutdown();
+    platform->shutdown();
 
   } catch (std::runtime_error &e) {
     std::cout << e.what() << std::endl;
