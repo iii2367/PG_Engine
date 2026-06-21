@@ -9,20 +9,17 @@ int main(int argc, char *argv[]) {
   try {
     Utils::Module<Engine> engine;
     engine.load("Engine.dll", "getClass", "destroyClass");
-    engine->init(
-        EngineInitInfo::isBasePlatform | EngineInitInfo::isWindowPlatform |
-        EngineInitInfo::isInputPlatform | EngineInitInfo::isAudioPlatform |
-        EngineInitInfo::isEventDispatcher | EngineInitInfo::isGFXAdapter);
+    engine->init();
+
 
     auto platform = engine->getPlatform();
-    auto base = engine->getPlatform()->getBase();
+    platform->init();
     auto window = engine->getPlatform()->getWindow();
     auto input = engine->getPlatform()->getInput();
     auto audio = engine->getPlatform()->getAudio();
     auto eventDispatcher = engine->getEventDispatcher();
     auto gfx = engine->getGFXAdapter();
 
-    base->init();
     audio->initAudio();
 
     WindowInfo winInfo{};
@@ -41,6 +38,7 @@ int main(int argc, char *argv[]) {
     Vec4 dst{400, 300, 200, 200};
     int imId = gfx->loadImage("image/image1.png");
     std::cout << imId << '\n';
+    int alf = gfx->loadImage("image/Alf.png");
 
     auto deviceCount = gfx->getRenderDevices();
     for (auto device : deviceCount) {
@@ -50,16 +48,7 @@ int main(int argc, char *argv[]) {
     int fontId = gfx->loadFont("font/ChelseaMarket.ttf", 22);
     int helloText = gfx->createText(fontId, "Hello World", {0, 0, 0, 0});
 
-    bool hi = true;
-    eventDispatcher->subscribe(EventType::PG_Key_Down_E,
-                               [&](const Event &e) { window->hide(); });
-    eventDispatcher->subscribe(EventType::PG_Key_Down_Q, [&](const Event &e) {
-      if (hi) {
-        hi = false;
-      } else {
-        hi = true;
-      }
-    });
+    
     std::atomic<bool> runningRender{true};
     float an = 0.5;
 std::atomic<int> fps{0};
@@ -92,10 +81,8 @@ frameCount++;
         an += 1;
         gfx->beginFrame({1.0f, 1.0f, 1.0f, 1.0f});
         // gfx->drawRect({50,50,50,50}, {0.0f,1.0f,1.0f,1.0f});
-        if (hi) {
-          gfx->drawImageById(imId, {dst.x, dst.y, dst.z, dst.w}, an,
-                             FlipMode::VERTICAL);
-        }
+          gfx->drawImageById(imId, {dst.x, dst.y, dst.z, dst.w}, an, FlipMode::VERTICAL);
+gfx->drawImageById(alf, {400,400,400,400}, an, FlipMode::VERTICAL);
         gfx->drawRect({50, 50, 50, 50}, {0.0f, 1.0f, 1.0f, 0.5f});
         gfx->drawLine({100, 100}, {100, 500}, {1.0f, 0.0f, 0.0f, 1.0});
         gfx->drawRectOutline({500, 500, 200, 100}, {0.0f, 0.0f, 1.0f, 1.0f});
@@ -105,24 +92,39 @@ frameCount++;
       }
     });
 
-    pollStateStruct st;
-auto runMove = [&](pollStateStruct& st) {
-if (st.W) { dst.y -= (st.LShift ? 25 : 5); }
-if (st.S) { dst.y += (st.LShift ? 25 : 5); }
-if (st.A) { dst.x -= (st.LShift ? 25 : 5); }
-if (st.D) { dst.x += (st.LShift ? 25 : 5); } };
+
+InputKey KeyW {.keyId=KeyId::W, .type=DeviceType::Keyboard};
+InputKey KeyA {.keyId=KeyId::A, .type=DeviceType::Keyboard};
+InputKey KeyS {.keyId=KeyId::S, .type=DeviceType::Keyboard};
+InputKey KeyD {.keyId=KeyId::D, .type=DeviceType::Keyboard};
+input->setKeyId(KeyW);
+input->setKeyId(KeyA);
+input->setKeyId(KeyS);
+input->setKeyId(KeyD);
+auto moveWASD = [&]()
+{
+    if (input->getKeyState(KeyW)) { dst.y -= 15; }
+    if (input->getKeyState(KeyA)) { dst.x -= 15; }
+    if (input->getKeyState(KeyS)) { dst.y += 15; }
+    if (input->getKeyState(KeyD)) { dst.x += 15; }
+};
+
+InputKey MouseL {.keyId=KeyId::MouseLeft, .type=DeviceType::Mouse};
+input->setKeyId(MouseL);
+
+eventDispatcher->subscribe("Click LMouse", [](Event e){std::cout << "Event: " << e.type << std::endl;});
     bool runnind = 1;
     while (runnind) {
-      base->update(16);
-      runnind = input->pollEvents(*eventDispatcher);
+      std::this_thread::sleep_for(std::chrono::milliseconds(16));
+      runnind = input->pollEvents();
       // window->renderFrame();
-      input->pollState(st);
-runMove(st);
-    }
+      moveWASD();
+      if (input->getKeyState(MouseL)) { float x,y; input->getMousePosition(x, y); std::cout << "x." << x << " y." << y << std::endl; eventDispatcher->dispatch(Event{"Click LMouse"});}
+   }
     runningRender = 0;
     renderThread.join();
     window->destroyWindow();
-    base->shutdown();
+    platform->shutdown();
 
   } catch (std::runtime_error &e) {
     std::cout << e.what() << std::endl;

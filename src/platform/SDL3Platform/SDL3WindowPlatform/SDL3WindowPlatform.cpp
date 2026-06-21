@@ -39,10 +39,15 @@ bool SDL3WindowPlatform::createWindow(const WindowInfo &info) {
 }
 
 void SDL3WindowPlatform::destroyWindow() {
-  if (window) {
-    SDL_DestroyWindow(window);
-    window = nullptr;
-  }
+    if (render)
+    {
+        SDL_DestroyRenderer(render);
+        render = nullptr;
+    }
+    if (window) {
+        SDL_DestroyWindow(window);
+        window = nullptr;
+    }
 }
 
 bool SDL3WindowPlatform::renderFrame() {
@@ -79,10 +84,6 @@ WindowHandle SDL3WindowPlatform::getWindowHandle() {
   wh.handle = window;
   getWindowSize(wh.width, wh.height);
   return wh;
-}
-
-void SDL3WindowPlatform::setWindowSize(int x, int y) {
-  SDL_SetWindowSize(window, x, y);
 }
 
 const char *SDL3WindowPlatform::getTitle() {

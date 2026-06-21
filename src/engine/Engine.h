@@ -18,7 +18,7 @@ public:
   Engine(Engine &&) = default;
   Engine &operator=(Engine&&) = default;
 
-  bool init(EngineInitInfo info) override;
+  bool init() override;
 
   IPlatform* getPlatform() const override;
   IGFXPort* getGFXAdapter() const override; 

@@ -1,99 +1,90 @@
-#ifndef MODULE_DLL_H
-#define MODULE_DLL_H
+#ifndef MODULE_H
+#define MODULE_H
 
 #include <stdexcept>
 #include <string>
 #include <windows.h>
 
-namespace Utils {
-template <class Type> class Module {
-public:
-  Module() = default;
-  ~Module() { unload(); }
+namespace Utils
+{
+    template <class Type> 
+    class Module 
+    {
+    public:
+        Module() = default;
+        ~Module() { unload(); }
 
-  Module(const Module &) = delete;
-  Module &operator=(const Module &) = delete;
-  Module(Module &&) = default;
-  Module &operator=(Module &&) = default;
-  Type* operator->() const { if (!instance) { throw std::runtime_error("Instance is not created"); } return instance; }
+        Module(const Module&) = delete;
+        Module &operator=(const Module&) = delete;
 
-  bool load(const std::string &dllPath, const std::string &createName,
-            const std::string &destroyName) {
-    if (dll_is_load) {
-      throw std::runtime_error("DLL already loaded: " + dllPath);
-    }
+        Module(Module&& other) noexcept { *this = std::move(other); }
 
-    hDll = LoadLibraryA(dllPath.c_str());
-    if (!hDll) {
-      DWORD err = GetLastError();
-      LPSTR msgBuf = nullptr;
-      FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                         FORMAT_MESSAGE_FROM_SYSTEM,
-                     NULL, err, 0, (LPSTR)&msgBuf, 0, NULL);
-      printf("Failed to load DLL: %s\nError %lu: %s\n", dllPath.c_str(), err,
-             msgBuf);
-      LocalFree(msgBuf);
-      throw std::runtime_error("Failed to load DLL: " + dllPath);
-    }
+        Module& operator=(Module&& other) noexcept
+        {
+            if (this != &other)
+            {
+                unload();
 
-    createFunc =
-        reinterpret_cast<Type *(*)()>(GetProcAddress(hDll, createName.c_str()));
-    if (!createFunc) {
-      unload();
-      throw std::runtime_error("Failed to load function: " + createName);
-    }
+                hDll_ = other.hDll_;
+                instance_ = other.instance_;
+                createFunc_ = other.createFunc_;
+                destroyFunc_ = other.destroyFunc_;
+                loaded_ = other.loaded_;
 
-    destroyFunc = reinterpret_cast<void (*)(Type *)>(
-        GetProcAddress(hDll, destroyName.c_str()));
-    if (!destroyFunc) {
-      unload();
-      throw std::runtime_error("Failed to load function: " + destroyName);
-    }
+                other.hDll_ = nullptr;
+                other.instance_ = nullptr;
+                other.createFunc_ = nullptr;
+                other.destroyFunc_ = nullptr;
+                other.loaded_ = false;
+            }
+            return *this;
+        } 
 
-    instance = createFunc();
-    if (!instance) {
-      unload();
-      throw std::runtime_error("Failed to create instance");
-    }
+        bool load(const std::string& dllPath, const std::string& createName, const std::string& destroyName)
+        {
+            if (loaded_) { throw std::runtime_error("Module already loaded: " + dllPath); }
 
-    dll_is_load = true;
-    pathDllNow = dllPath;
-    return true;
-  }
+            hDll_ = LoadLibraryA(dllPath.c_str());
+            if (!hDll_) { DWORD err = GetLastError(); throw std::runtime_error("Failed to load DLL: " + dllPath + " (error " + std::to_string(err) + ")"); }          
 
-  void unload() {
-    if (!dll_is_load) {
-      return;
-    }
+            createFunc_ = reinterpret_cast<Type*(*)()>(GetProcAddress(hDll_, createName.c_str()));
+            if (!createFunc_) { unload(); throw std::runtime_error("Failed to find create function: " + createName); }
 
-    if (instance && destroyFunc) {
-      destroyFunc(instance);
-      instance = nullptr;
-    }
+            destroyFunc_ = reinterpret_cast<void(*)(Type*)>(GetProcAddress(hDll_, destroyName.c_str()));
+            if (!destroyFunc_) { unload(); throw std::runtime_error("Failed to find destroy function: " + destroyName); }
 
-    if (hDll) {
-      FreeLibrary(hDll);
-      hDll = nullptr;
-    }
+            instance_ = createFunc_();
+            if (!instance_) { unload(); throw std::runtime_error("Failed to create module instance"); }
 
-    destroyFunc = nullptr;
-    createFunc = nullptr;
-    dll_is_load = false;
-    pathDllNow.clear();
-  }
+            loaded_ = true;
+            return true;
+        }
 
-  bool isLoaded() const { return dll_is_load; }
-  Type *getInstance() const { return instance; }
+        void unload() 
+        {
+            if (!loaded_) { return; }
+            if (instance_ && destroyFunc_) { destroyFunc_(instance_); instance_ = nullptr; }
+            if (hDll_) { FreeLibrary(hDll_); hDll_ = nullptr; }
 
-private:
-  HMODULE hDll = nullptr;
-  bool dll_is_load = false;
-  std::string pathDllNow;
+            destroyFunc_ = nullptr;
+            createFunc_ = nullptr;
+            loaded_ = false;
+        }
 
-  Type *instance = nullptr;
-  Type *(*createFunc)() = nullptr;
-  void (*destroyFunc)(Type *) = nullptr;
-};
-} // namespace Utils
+        bool isLoaded() const { return loaded_; }
+        Type* get() const { return instance_; }
+        Type& operator*() const {
+        if (!instance_) { throw std::runtime_error("Module not initialized");} return *instance_; }
+        Type* operator->() const { if (!instance_) { throw std::runtime_error("Module not initialized"); } return instance_; }
+
+    private:
+        HMODULE hDll_ = nullptr;
+        bool loaded_ = false;
+
+        Type* instance_ = nullptr;
+        Type* (*createFunc_)() = nullptr;
+        void (*destroyFunc_)(Type *) = nullptr;
+    };
+}
 
 #endif

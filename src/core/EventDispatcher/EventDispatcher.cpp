@@ -1,11 +1,11 @@
 #include "EventDispatcher.h"
 
-void EventDispatcher::subscribe(EventType type, DispatcherHandler handler) // підписка на івент
+void EventDispatcher::subscribe(std::string type, DispatcherHandler handler)
 {
     handlers[type].push_back(handler);
 }
 
-void EventDispatcher::dispatch(const Event& event) // запуск всіх функцій з івенту
+void EventDispatcher::dispatch(const Event& event)
 {
     auto it = handlers.find(event.type);
     if (it != handlers.end())

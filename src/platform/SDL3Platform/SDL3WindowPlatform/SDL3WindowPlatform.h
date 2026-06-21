@@ -21,7 +21,6 @@ public:
   void resize(int width, int height) override;
   WindowHandle getWindowHandle() override;
 
-  void setWindowSize(int x, int y) override;
   const char *getTitle() override;
   void setFullScreen(bool enabled) override;
   bool isFullScreen() override;

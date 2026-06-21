@@ -17,7 +17,7 @@ bool GFXSDL3Adapter::init(WindowHandle handle, bool vsync)
     window = static_cast<SDL_Window*>(handle.handle);
     if (!window) { return false; }
 
-    if (TTF_Init() == false)
+    if (!TTF_Init())
     {
         SDL_DestroyRenderer(renderer);
         renderer = nullptr;
@@ -27,6 +27,7 @@ bool GFXSDL3Adapter::init(WindowHandle handle, bool vsync)
     renderer = SDL_CreateRenderer(window, nullptr);
     if (!renderer)
     {
+        TTF_Quit();
         SDL_Log("Renderer error: %s", SDL_GetError());
         return false;
     }   
@@ -35,6 +36,7 @@ bool GFXSDL3Adapter::init(WindowHandle handle, bool vsync)
     { 
         if (!SDL_SetRenderVSync(renderer, 1))
         {
+            TTF_Quit();
             SDL_DestroyRenderer(renderer);
             renderer = nullptr;
             return false;
@@ -50,7 +52,7 @@ bool GFXSDL3Adapter::init(WindowHandle handle, bool vsync, int driverIndex)
     window = static_cast<SDL_Window*>(handle.handle);
     if (!window) { return false; }
 
-    if (TTF_Init() == false)
+    if (!TTF_Init())
     {
         SDL_DestroyRenderer(renderer);
         renderer = nullptr;
@@ -60,6 +62,7 @@ bool GFXSDL3Adapter::init(WindowHandle handle, bool vsync, int driverIndex)
     renderer = SDL_CreateRenderer(window, SDL_GetRenderDriver(driverIndex)); 
     if (!renderer)
     {
+        TTF_Quit();
         SDL_Log("Renderer error: %s", SDL_GetError());
         return false;
     }   
@@ -68,6 +71,7 @@ bool GFXSDL3Adapter::init(WindowHandle handle, bool vsync, int driverIndex)
     { 
         if (!SDL_SetRenderVSync(renderer, 1))
         {
+            TTF_Quit();
             SDL_DestroyRenderer(renderer);
             renderer = nullptr;
             return false;
@@ -178,7 +182,7 @@ bool GFXSDL3Adapter::drawImageById(int id, Rect dst, float angle, FlipMode flip)
     SDL_FRect rect{dst.x, dst.y, dst.w, dst.h};
 
     SDL_FlipMode sdlFlip = toSDLFlip(flip);
-    if (angle != 0 || flip != FlipMode::NONE)
+    if (std::abs(angle) > 0.001f || flip != FlipMode::NONE)
     {
         SDL_FPoint center{ rect.w * 0.5f, rect.h * 0.5f };
         return SDL_RenderTextureRotated(renderer, img.texture, nullptr, &rect, angle, &center, sdlFlip);
@@ -199,7 +203,7 @@ bool GFXSDL3Adapter::drawImageRegionById(int id, Rect src, Rect dst, float angle
     SDL_FRect d{ dst.x, dst.y, dst.w, dst.h }; 
 
     SDL_FlipMode sdlFlip = toSDLFlip(flip);
-    if (angle != 0 || flip != FlipMode::NONE)
+    if (std::abs(angle) > 0.001f || flip != FlipMode::NONE)
     {
         SDL_FPoint center{ d.w * 0.5f, d.h * 0.5f };
         return SDL_RenderTextureRotated(renderer, img.texture, &s, &d, angle, &center, sdlFlip);
