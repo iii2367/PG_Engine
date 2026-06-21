@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
     Vec4 dst{400, 300, 200, 200};
     int imId = gfx->loadImage("image/image1.png");
     std::cout << imId << '\n';
+    int alf = gfx->loadImage("image/Alf.png");
 
     auto deviceCount = gfx->getRenderDevices();
     for (auto device : deviceCount) {
@@ -80,8 +81,8 @@ frameCount++;
         an += 1;
         gfx->beginFrame({1.0f, 1.0f, 1.0f, 1.0f});
         // gfx->drawRect({50,50,50,50}, {0.0f,1.0f,1.0f,1.0f});
-          gfx->drawImageById(imId, {dst.x, dst.y, dst.z, dst.w}, an,
-                             FlipMode::VERTICAL);
+          gfx->drawImageById(imId, {dst.x, dst.y, dst.z, dst.w}, an, FlipMode::VERTICAL);
+gfx->drawImageById(alf, {400,400,400,400}, an, FlipMode::VERTICAL);
         gfx->drawRect({50, 50, 50, 50}, {0.0f, 1.0f, 1.0f, 0.5f});
         gfx->drawLine({100, 100}, {100, 500}, {1.0f, 0.0f, 0.0f, 1.0});
         gfx->drawRectOutline({500, 500, 200, 100}, {0.0f, 0.0f, 1.0f, 1.0f});

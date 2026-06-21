@@ -2,7 +2,7 @@
 #define GFXPORT_H
 
 #include "../../platform/WindowHandle.h"
-#include "../../ports/GFXPort/GFXMath.h"
+#include "../../core/Math/Math.h"
 #include <string>
 
 enum class FlipMode
