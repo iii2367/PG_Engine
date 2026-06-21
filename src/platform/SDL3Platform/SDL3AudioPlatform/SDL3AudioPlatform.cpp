@@ -11,12 +11,7 @@ bool    SDL3AudioPlatform::initAudio()
 {
     if (!MIX_Init()) { return false; }
 
-    SDL_AudioSpec spec{};
-    spec.freq = 48000;
-    spec.format = SDL_AUDIO_F32;
-    spec.channels = 2;
-
-    mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr); // другий параметер це спеціальні налаштування частоти наприклад
+    mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
     if (!mixer) { return false; }
 
     return (mixer != nullptr);
@@ -42,7 +37,7 @@ int     SDL3AudioPlatform::addAudio(const std::string& path, std::string& tag)
     if (!audio) { return -1; }
 
     MIX_Track* track = MIX_CreateTrack(mixer);
-    if (!track) { return -1; } 
+    if (!track) { MIX_DestroyAudio(audio); return -1; } 
     
     MIX_SetTrackAudio(track, audio);
     
@@ -148,7 +143,7 @@ bool    SDL3AudioPlatform::setVolumeByTag(std::string& tag, float volume)
     for (int id : getIdsByTag(tag)) { ok &= MIX_SetTrackGain(entries[id].track, volume); }
     return ok;
 }
-bool    SDL3AudioPlatform::setVolumeById(float volume) { return MIX_SetMixerGain(mixer, volume); }
+bool    SDL3AudioPlatform::setVolumeAll(float volume) { return MIX_SetMixerGain(mixer, volume); }
 
 /*============================================================================================*/
 
@@ -259,7 +254,7 @@ bool    SDL3AudioPlatform::stopLoopAudioById(int id)
     auto it = entries.find(id);
     if (it == entries.end()) { return false; }
 
-    it->second.isLoop = true;
+    it->second.isLoop = false;
     return MIX_SetTrackLoops(it->second.track, 0);
 }
 bool    SDL3AudioPlatform::stopLoopAudioByTag(std::string& tag)

@@ -25,7 +25,7 @@ struct IAudioPlatform
 
     virtual bool    setVolumeById(int id, float volume = 1.0f) = 0;
     virtual bool    setVolumeByTag(std::string& tag, float volume = 1.0f) = 0;
-    virtual bool    setVolumeById(float volume = 1.0f) = 0;
+    virtual bool    setVolumeAll(float volume = 1.0f) = 0;
 
     virtual bool    restartAudioById(int id) = 0;
     virtual bool    restartAudioByTag(std::string& tag) = 0;

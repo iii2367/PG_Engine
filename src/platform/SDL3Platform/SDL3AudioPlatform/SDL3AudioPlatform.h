@@ -28,7 +28,7 @@ public:
 
     bool    setVolumeById(int id, float volume = 1.0f) override;
     bool    setVolumeByTag(std::string& tag, float volume = 1.0f) override;
-    bool    setVolumeById(float volume = 1.0f) override;
+    bool    setVolumeAll(float volume = 1.0f) override;
 
     bool    restartAudioById(int id) override;
     bool    restartAudioByTag(std::string& tag) override;
