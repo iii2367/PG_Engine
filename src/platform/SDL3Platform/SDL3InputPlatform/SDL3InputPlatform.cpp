@@ -1,4 +1,5 @@
 #include "SDL3InputPlatform.h"
+#include "../../../core/Key/KeyId.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_keyboard.h>
@@ -6,287 +7,124 @@
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_scancode.h>
+#include <any>
 
-void SDL3InputPlatform::pollState(pollStateStruct &st) {
-  const bool *state = SDL_GetKeyboardState(nullptr);
-  SDL_MouseButtonFlags mouseState = SDL_GetMouseState(nullptr, nullptr);
-  st.W = state[SDL_SCANCODE_W];
-  st.A = state[SDL_SCANCODE_A];
-  st.S = state[SDL_SCANCODE_S];
-  st.D = state[SDL_SCANCODE_D];
-  st.Q = state[SDL_SCANCODE_Q];
-  st.R = state[SDL_SCANCODE_R];
-  st.E = state[SDL_SCANCODE_E];
-  st.F = state[SDL_SCANCODE_F];
-  st.C = state[SDL_SCANCODE_C];
-  st.X = state[SDL_SCANCODE_X];
-  st.Z = state[SDL_SCANCODE_Z];
-  st.LCtrl = state[SDL_SCANCODE_LCTRL];
-  st.LShift = state[SDL_SCANCODE_LSHIFT];
-  st.LMouseButton = (mouseState & SDL_BUTTON_LMASK);
-  st.RMouseButton = (mouseState & SDL_BUTTON_RMASK);
+void SDL3InputPlatform::setKeyId(InputKey& key)
+{
+    if (key.type == DeviceType::Keyboard)
+    {
+        switch (key.keyId)
+        {
+            case KeyId::A: key.platformId = SDL_SCANCODE_A; break;
+            case KeyId::B: key.platformId = SDL_SCANCODE_B; break;
+            case KeyId::C: key.platformId = SDL_SCANCODE_C; break;
+            case KeyId::D: key.platformId = SDL_SCANCODE_D; break;
+            case KeyId::E: key.platformId = SDL_SCANCODE_E; break;
+            case KeyId::F: key.platformId = SDL_SCANCODE_F; break;
+            case KeyId::G: key.platformId = SDL_SCANCODE_G; break;
+            case KeyId::H: key.platformId = SDL_SCANCODE_H; break;
+            case KeyId::I: key.platformId = SDL_SCANCODE_I; break;
+            case KeyId::J: key.platformId = SDL_SCANCODE_J; break;
+            case KeyId::K: key.platformId = SDL_SCANCODE_K; break;
+            case KeyId::L: key.platformId = SDL_SCANCODE_L; break;
+            case KeyId::M: key.platformId = SDL_SCANCODE_M; break;
+            case KeyId::N: key.platformId = SDL_SCANCODE_N; break;
+            case KeyId::O: key.platformId = SDL_SCANCODE_O; break;
+            case KeyId::P: key.platformId = SDL_SCANCODE_P; break;
+            case KeyId::Q: key.platformId = SDL_SCANCODE_Q; break;
+            case KeyId::R: key.platformId = SDL_SCANCODE_R; break;
+            case KeyId::S: key.platformId = SDL_SCANCODE_S; break;
+            case KeyId::T: key.platformId = SDL_SCANCODE_T; break;
+            case KeyId::U: key.platformId = SDL_SCANCODE_U; break;
+            case KeyId::V: key.platformId = SDL_SCANCODE_V; break;
+            case KeyId::W: key.platformId = SDL_SCANCODE_W; break;
+            case KeyId::X: key.platformId = SDL_SCANCODE_X; break;
+            case KeyId::Y: key.platformId = SDL_SCANCODE_Y; break;
+            case KeyId::Z: key.platformId = SDL_SCANCODE_Z; break;
+
+            case KeyId::Digit0: key.platformId = SDL_SCANCODE_0; break;
+            case KeyId::Digit1: key.platformId = SDL_SCANCODE_1; break;
+            case KeyId::Digit2: key.platformId = SDL_SCANCODE_2; break;
+            case KeyId::Digit3: key.platformId = SDL_SCANCODE_3; break;
+            case KeyId::Digit4: key.platformId = SDL_SCANCODE_4; break;
+            case KeyId::Digit5: key.platformId = SDL_SCANCODE_5; break;
+            case KeyId::Digit6: key.platformId = SDL_SCANCODE_6; break;
+            case KeyId::Digit7: key.platformId = SDL_SCANCODE_7; break;
+            case KeyId::Digit8: key.platformId = SDL_SCANCODE_8; break;
+            case KeyId::Digit9: key.platformId = SDL_SCANCODE_9; break;
+
+            case KeyId::Enter: key.platformId = SDL_SCANCODE_RETURN; break;
+            case KeyId::Space: key.platformId = SDL_SCANCODE_SPACE; break;
+            case KeyId::Escape: key.platformId = SDL_SCANCODE_ESCAPE; break;
+            case KeyId::Tab: key.platformId = SDL_SCANCODE_TAB; break;
+            case KeyId::Backspace: key.platformId = SDL_SCANCODE_BACKSPACE; break;
+
+            case KeyId::ArrowUp: key.platformId = SDL_SCANCODE_UP; break;
+            case KeyId::ArrowDown: key.platformId = SDL_SCANCODE_DOWN; break;
+            case KeyId::ArrowLeft: key.platformId = SDL_SCANCODE_LEFT; break;
+            case KeyId::ArrowRight: key.platformId = SDL_SCANCODE_RIGHT; break;
+
+            case KeyId::ShiftLeft: key.platformId = SDL_SCANCODE_LSHIFT; break;
+            case KeyId::ShiftRight: key.platformId = SDL_SCANCODE_RSHIFT; break;
+            case KeyId::ControlLeft: key.platformId = SDL_SCANCODE_LCTRL; break;
+            case KeyId::ControlRight: key.platformId = SDL_SCANCODE_RCTRL; break;
+            case KeyId::AltLeft: key.platformId = SDL_SCANCODE_LALT; break;
+            case KeyId::AltRight: key.platformId = SDL_SCANCODE_RALT; break;
+
+            case KeyId::CapsLock: key.platformId = SDL_SCANCODE_CAPSLOCK; break;
+            case KeyId::NumLock: key.platformId = SDL_SCANCODE_NUMLOCKCLEAR; break;
+            case KeyId::ScrollLock: key.platformId = SDL_SCANCODE_SCROLLLOCK; break;
+
+            default: key.platformId = SDL_SCANCODE_UNKNOWN; break;
+        }
+    }
+    else if (key.type == DeviceType::Mouse)
+    {
+        switch (key.keyId)
+        {
+            case KeyId::MouseLeft: key.platformId = SDL_BUTTON_LMASK; break;
+            case KeyId::MouseRight: key.platformId = SDL_BUTTON_RMASK; break;
+            case KeyId::MouseMiddle: key.platformId = SDL_BUTTON_MMASK; break;
+            case KeyId::MouseBack: key.platformId = SDL_BUTTON_X1MASK; break;
+            case KeyId::MouseForward: key.platformId = SDL_BUTTON_X2MASK; break;
+
+            default: key.platformId = 0; break;
+        }
+    }
 }
 
-bool SDL3InputPlatform::pollEvents(EventDispatcher &dispatcher) {
-  SDL_Event event;
-  while (SDL_PollEvent(&event)) {
-    Event e{};
-    switch (event.type) {
-    case SDL_EVENT_QUIT: {
-      return false;
+bool SDL3InputPlatform::getKeyState(const InputKey& key)
+{
+    switch (key.type) 
+    {
+        case DeviceType::Keyboard:
+        {
+            auto state = SDL_GetKeyboardState(nullptr);
+            return state[std::any_cast<SDL_Scancode>(key.platformId)];
+        }
+        case DeviceType::Mouse:
+        {
+            auto mouse = SDL_GetMouseState(nullptr, nullptr);
+            return (mouse & std::any_cast<Uint32>(key.platformId)) != 0;
+        }
     }
-    case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-
-      getMousePosition(e.x, e.y);
-      switch (event.button.button) {
-      case SDL_BUTTON_LEFT: {
-        e.type = EventType::PG_LMouse_Click;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDL_BUTTON_RIGHT: {
-        e.type = EventType::PG_RMouse_Click;
-        dispatcher.dispatch(e);
-        break;
-      }
-      }
-      break;
-    }
-    case SDL_EVENT_KEY_DOWN: // Наш івент якщо кнопка натистута
-    { 
-      getMousePosition(e.x, e.y); 
-     if (event.key.mod & SDL_KMOD_LCTRL) {
-       e.type = EventType::PG_Key_Down_LCTRL;
-       dispatcher.dispatch(e);
-     }
-     if (event.key.mod & SDL_KMOD_LSHIFT) {
-       e.type = EventType::PG_Key_Down_LSHIFT;
-       dispatcher.dispatch(e);
-     }
-      switch (event.key.key) {
-
-      case SDLK_W: {
-        e.type = EventType::PG_Key_Down_W;
-        dispatcher.dispatch(e);
-        break;
-      } 
-      case SDLK_A: {
-        e.type = EventType::PG_Key_Down_A;
-        dispatcher.dispatch(e);
-        break;
-      } 
-      case SDLK_S: {
-        e.type = EventType::PG_Key_Down_S;
-        dispatcher.dispatch(e);
-        break;
-      } 
-      case SDLK_D: {
-        e.type = EventType::PG_Key_Down_D;
-        dispatcher.dispatch(e);
-        break;
-      } 
-      case SDLK_Q: {
-        e.type = EventType::PG_Key_Down_Q;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_E: {
-        e.type = EventType::PG_Key_Down_E;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_Z: {
-        e.type = EventType::PG_Key_Down_Z;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_X: {
-        e.type = EventType::PG_Key_Down_X;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_C: {
-        e.type = EventType::PG_Key_Down_C;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_F: {
-        e.type = EventType::PG_Key_Down_F;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_R: {
-        e.type = EventType::PG_Key_Down_R;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_V: {
-        e.type = EventType::PG_Key_Down_V;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_B: {
-        e.type = EventType::PG_Key_Down_B;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_G: {
-        e.type = EventType::PG_Key_Down_G;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_H: {
-        e.type = EventType::PG_Key_Down_H;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_I: {
-        e.type = EventType::PG_Key_Down_I;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_J: {
-        e.type = EventType::PG_Key_Down_J;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_K: {
-        e.type = EventType::PG_Key_Down_K;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_L: {
-        e.type = EventType::PG_Key_Down_L;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_M: {
-        e.type = EventType::PG_Key_Down_M;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_N: {
-        e.type = EventType::PG_Key_Down_N;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_O: {
-        e.type = EventType::PG_Key_Down_O;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_P: {
-        e.type = EventType::PG_Key_Down_P;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_T: {
-        e.type = EventType::PG_Key_Down_T;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_U: {
-        e.type = EventType::PG_Key_Down_U;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_Y: {
-        e.type = EventType::PG_Key_Down_Y;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_SPACE: {
-        e.type = EventType::PG_Key_Down_SPACE;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_RETURN: {
-        e.type = EventType::PG_Key_Down_ENTER;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_TAB: {
-        e.type = EventType::PG_Key_Down_TAB;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_ESCAPE: {
-        e.type = EventType::PG_Key_Down_ESC;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_0: {
-        e.type = EventType::PG_Key_Down_0;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_1: {
-        e.type = EventType::PG_Key_Down_1;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_2: {
-        e.type = EventType::PG_Key_Down_2;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_3: {
-        e.type = EventType::PG_Key_Down_3;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_4: {
-        e.type = EventType::PG_Key_Down_4;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_5: {
-        e.type = EventType::PG_Key_Down_5;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_6: {
-        e.type = EventType::PG_Key_Down_6;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_7: {
-        e.type = EventType::PG_Key_Down_7;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_8: {
-        e.type = EventType::PG_Key_Down_8;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDLK_9: {
-        e.type = EventType::PG_Key_Down_9;
-        dispatcher.dispatch(e);
-        break;
-      }
-      case SDL_EVENT_MOUSE_MOTION: {
-        getMousePosition(e.x, e.y);
-        e.type = EventType::PG_Mouse_Move;
-        dispatcher.dispatch(e);
-        break;
-      }
-      }
-      break;
-    }
-    }
-  }
-  return true;
+    return false;
 }
 
-bool SDL3InputPlatform::isKeyPressed(int keyCode) {
-  // Для виловленя коду кнопок покищо невірна сигнатура потім підправимо
+bool SDL3InputPlatform::pollEvents()
+{
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) 
+    {
+        switch (event.type)
+        { 
+            case SDL_EVENT_QUIT: { return false; } 
+        }
+    }
+    return true;
 }
 
-bool SDL3InputPlatform::isMouseButtonPressed(int button) {
-  // Диловлення кнопок миші теж поки невірно
-}
-
-void SDL3InputPlatform::getMousePosition(float &x, float &y) {
-  SDL_GetMouseState(&x, &y);
+void SDL3InputPlatform::getMousePosition(float &x, float &y)
+{
+    SDL_GetMouseState(&x, &y);
 }
