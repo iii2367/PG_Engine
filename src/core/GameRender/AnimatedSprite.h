@@ -27,7 +27,7 @@ public:
         {
             accumulator -= currentAnim.frameTime;
 
-            currentFrame++;
+            currentFrame+=100;
 
             if(currentFrame >= currentAnim.frames)
             {

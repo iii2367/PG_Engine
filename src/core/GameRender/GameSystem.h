@@ -11,10 +11,11 @@ public:
     explicit RenderSystem(IGFXPort& gfx);
     Camera& getCamera();
     void drawSprite(int textureId, Rect worldRect);
-    void drawAnimated(AnimatedSprite& anim, Rect worldRect); 
+    void drawAnimated(AnimatedSprite& anim, Rect worldRect, float winX, float winY); 
 private:
 
     IGFXPort& gfx;
+public:
     Camera camera;
 };
 

@@ -10,19 +10,23 @@ struct SpriteSheet
     int frameCountX = 1;
     int animationCountY = 1;
 
-    int textureWidth = 0;
-    int textureHeight = 0;
+    Rect rect {0, 0, 0, 0};
+
+    float frameW = 0;
+    float frameH = 0;
+
+    void setSizeFrame()
+    {
+        frameW = rect.w / frameCountX;
+        frameH = rect.h / animationCountY;
+    }
 
     Rect getFrame(int frame, int animation) const
     {
-        float frameW = textureWidth / frameCountX;
-
-        float frameH = textureHeight / animationCountY;
-
         return
         {
-            frame * frameW,
-            animation * frameH,
+            rect.w + frame * frameW,
+            rect.h + animation * frameH,
             frameW,
             frameH
         };
