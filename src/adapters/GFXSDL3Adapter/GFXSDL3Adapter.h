@@ -20,6 +20,7 @@ public:
     bool init(WindowHandle handle, bool vsync, int driverIndex) override;
     void quitGFX() override;
     std::vector<RenderDriverInfo> getRenderDevices() override;
+    std::any getContext() override;
 
     bool beginFrame(Color color) override;
     bool endFrame() override;

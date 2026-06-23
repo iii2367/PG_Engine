@@ -4,6 +4,7 @@
 #include "../../platform/WindowHandle.h"
 #include "../../core/Math/Math.h"
 #include <string>
+#include <any>
 
 enum class FlipMode
 {
@@ -26,6 +27,7 @@ struct IGFXPort
     virtual bool init(WindowHandle handle, bool vsync, int driverIndex) = 0;
     virtual void quitGFX() = 0;
     virtual std::vector<RenderDriverInfo> getRenderDevices() = 0;
+    virtual std::any getContext() = 0;
 
     virtual bool beginFrame(Color color) = 0;
     virtual bool endFrame() = 0;
