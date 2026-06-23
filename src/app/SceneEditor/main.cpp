@@ -1,145 +1,229 @@
-#include "../../engine/Engine.h"
-#include <Module.h>
-#include <SDL3/SDL_video.h>
-#include <any>
-#include <iostream>
-#include <stdexcept>
-#include <thread>
-#include <chrono>
 #include "../../core/ActionManager/ActionManager.h"
 #include "../../core/ActionManager/InputAction.h"
 #include "../../core/GameRender/GameSystem.h"
 #include "../../core/GameRender/ResourceManager.h"
+#include "../../engine/Engine.h"
 
+#include <SDL3/SDL_events.h>
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_sdlrenderer3.h>
+
+#include <Module.h>
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_video.h>
+#include <any>
+#include <chrono>
+#include <iostream>
+#include <stdexcept>
+#include <thread>
+#include <winuser.h>
 
-int main(int argc, char** argv)
-{
-    try
-    {
-        Utils::Module<IEngine> engine;
-        engine.load("Engine.dll", "getClass", "destroyClass");
-        engine->init();
+int main(int argc, char **argv) {
+  try {
+    Utils::Module<IEngine> engine;
+    engine.load("Engine.dll", "getClass", "destroyClass");
+    engine->init();
 
-        auto platform = engine->getPlatform();
-        platform->init();
-        auto window = engine->getPlatform()->getWindow();
-        auto input = engine->getPlatform()->getInput();
-        auto audio = engine->getPlatform()->getAudio();
-        audio->initAudio();
-        auto eventDispatcher = engine->getEventDispatcher();
-        auto gfx = engine->getGFXAdapter();
-    
-        WindowInfo winInfo{};
-        winInfo.decorated = true;
-        winInfo.resizable = true;
-        window->createWindow(winInfo);
-    
-        std::string audioTag = "Music";
-        auto audioId1 = audio->addAudioStream("music/TestStream1.wav", audioTag);
-        audio->loopAudioById(audioId1);
+    auto platform = engine->getPlatform();
+    platform->init();
+    auto window = engine->getPlatform()->getWindow();
+    auto input = engine->getPlatform()->getInput();
+    auto audio = engine->getPlatform()->getAudio();
+    audio->initAudio();
+    auto eventDispatcher = engine->getEventDispatcher();
+    auto gfx = engine->getGFXAdapter();
 
-        auto handle = window->getWindowHandle();
-        if (!gfx->init(handle, true)) { throw std::runtime_error("failed to init gfx"); }
-        
-//SDLTypes
-        WindowHandle hand = window->getWindowHandle();
-        SDL_Window* windowSDL = static_cast<SDL_Window*>(hand.handle);
-        SDL_Renderer* renderersDL = std::any_cast<SDL_Renderer*>(gfx->getContext());
+    WindowInfo winInfo{};
+    winInfo.decorated = true;
+    winInfo.resizable = true;
+    window->createWindow(winInfo);
 
-        int imageId1 = gfx->loadImage("image/image1.png");
-        Rect dst{400, 300, 200, 200};
-        int imageId2 = gfx->loadImage("image/Alf.png");
+    std::string audioTag = "Music";
+    auto audioId1 = audio->addAudioStream("music/TestStream1.wav", audioTag);
+    audio->loopAudioById(audioId1);
 
-        int fontId1 = gfx->loadFont("font/ChelseaMarket.ttf", 22);
-        int helloTextId1 = gfx->createText(fontId1, "Hello World", {0, 0, 0, 0});
-
-        std::atomic<bool> runningRender{true};
-        std::atomic<int> fps{0};
-        Camera camera;
-        camera.position = {0,0};
-        camera.zoom = 1.0f;
-        Rect locRect{0,0,0,0};
-        std::thread renderThread([&] 
-        {
-            using clock = std::chrono::high_resolution_clock;
-            auto lastTime = clock::now();
-            int frameCount = 0;
-            int ft = gfx->createText(fontId1, "FPS: ~", {0, 0, 0, 0});
-
-
-            while (runningRender)
-            {
-                frameCount++;
-                auto now = clock::now();
-                std::chrono::duration<float> delta = now - lastTime;
-                if (delta.count() >= 1.0f)
-                {
-                    fps = frameCount;   
-                    frameCount = 0;
-                    lastTime = now;
-                    gfx->updateText(ft, "FPS: " + std::to_string(fps.load()));
-                }
-                
-                float winWidth=800, winHeight=600;
-                locRect = camera.worldToScreen(dst, winWidth, winHeight);
-                gfx->beginFrame({1.0f, 1.0f, 1.0f, 1.0f}); 
-                gfx->drawImageById(imageId1, {locRect.x, locRect.y, locRect.w, locRect.h}, 0, FlipMode::NONE);
-                locRect = camera.worldToScreen({400,400,400,400}, winWidth, winHeight);
-                gfx->drawImageById(imageId2, {locRect.x,locRect.y,locRect.w,locRect.h}, 0, FlipMode::NONE);
-                locRect = camera.worldToScreen({100,100,1,1}, winWidth, winHeight);
-                gfx->drawTextById(helloTextId1, {locRect.x, locRect.y, locRect.w, locRect.h});
-                gfx->drawTextById(ft, {0, 0, 0, 0});
-                gfx->endFrame();
-            }
-        });
-
-        InputKey KeyW {.keyId=KeyId::W, .type=DeviceType::Keyboard};
-        InputKey KeyA {.keyId=KeyId::A, .type=DeviceType::Keyboard};
-        InputKey KeyS {.keyId=KeyId::S, .type=DeviceType::Keyboard};
-        InputKey KeyD {.keyId=KeyId::D, .type=DeviceType::Keyboard};
-        InputKey KeyUp {.keyId=KeyId::ArrowUp, .type=DeviceType::Keyboard};
-        InputKey KeyDown {.keyId=KeyId::ArrowDown, .type=DeviceType::Keyboard};
-        input->setKeyId(KeyW);
-        input->setKeyId(KeyA);
-        input->setKeyId(KeyS);
-        input->setKeyId(KeyD);
-        input->setKeyId(KeyUp);
-        input->setKeyId(KeyDown);
-        ActionManager actionManager;
-        actionManager.actions["moveUp"] = InputAction{"moveUp", {KeyW}};
-        actionManager.actions["moveLeft"] = InputAction{"moveLeft", {KeyA}};
-        actionManager.actions["moveDown"] = InputAction{"moveDown", {KeyS}};
-        actionManager.actions["moveRight"] = InputAction{"moveRight", {KeyD}};
-        actionManager.actions["zoomUp"] = InputAction{"zoomUp", {KeyUp}};
-        actionManager.actions["zoomDown"] = InputAction{"zoomDown", {KeyDown}};
-        auto moveWASD = [&]()
-        {
-            if (actionManager.IsActive("moveUp", input)) { dst.y -= 15; camera.position.y-=15;}
-            if (actionManager.IsActive("moveLeft", input)) { dst.x -= 15; camera.position.x-=15;}
-            if (actionManager.IsActive("moveDown", input)) { dst.y += 15; camera.position.y+=15;}
-            if (actionManager.IsActive("moveRight", input)) { dst.x += 15; camera.position.x+=15;}
-            if (actionManager.IsActive("zoomDown", input)) { camera.zoom-=0.005; puts("zoom-");}
-            if (actionManager.IsActive("zoomUp", input)) { camera.zoom+=0.005; puts("zoom+");}
-        };
-
-        bool runnind = 1;
-        while (runnind) 
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(16));
-            runnind = input->pollEvents();
-            moveWASD();
-        }    
-        runningRender = 0;
-        renderThread.join();
-        window->destroyWindow();
-        platform->shutdown();
-
+    auto handle = window->getWindowHandle();
+    if (!gfx->init(handle, true)) {
+      throw std::runtime_error("failed to init gfx");
     }
-    catch (std::runtime_error &e)
-    {
-        std::cout << e.what() << std::endl;
-        std::cin.get();
+
+    // SDLTypes
+    WindowHandle hand = window->getWindowHandle();
+    SDL_Window *windowSDL = static_cast<SDL_Window *>(hand.handle);
+    SDL_Renderer *rendererSDL =
+        std::any_cast<SDL_Renderer *>(gfx->getContext());
+
+    int imageId1 = gfx->loadImage("image/image1.png");
+    Rect dst{400, 300, 200, 200};
+    int imageId2 = gfx->loadImage("image/Alf.png");
+
+    int fontId1 = gfx->loadFont("font/ChelseaMarket.ttf", 22);
+    int helloTextId1 = gfx->createText(fontId1, "Hello World", {0, 0, 0, 0});
+
+    std::atomic<bool> runningRender{true};
+    std::atomic<int> fps{0};
+    Camera camera;
+    camera.position = {0, 0};
+    camera.zoom = 1.0f;
+    Rect locRect{0, 0, 0, 0};
+    /*
+    std::thread renderThread([&] {
+      using clock = std::chrono::high_resolution_clock;
+      auto lastTime = clock::now();
+      int frameCount = 0;
+      int ft = gfx->createText(fontId1, "FPS: ~", {0, 0, 0, 0});
+
+      while (runningRender) {
+        frameCount++;
+        auto now = clock::now();
+        std::chrono::duration<float> delta = now - lastTime;
+        if (delta.count() >= 1.0f) {
+          fps = frameCount;
+          frameCount = 0;
+          lastTime = now;
+          gfx->updateText(ft, "FPS: " + std::to_string(fps.load()));
+        }
+
+        float winWidth = 800, winHeight = 600;
+        locRect = camera.worldToScreen(dst, winWidth, winHeight);
+        gfx->beginFrame({1.0f, 1.0f, 1.0f, 1.0f});
+        gfx->drawImageById(imageId1,
+                           {locRect.x, locRect.y, locRect.w, locRect.h}, 0,
+                           FlipMode::NONE);
+        locRect =
+            camera.worldToScreen({400, 400, 400, 400}, winWidth, winHeight);
+        gfx->drawImageById(imageId2,
+                           {locRect.x, locRect.y, locRect.w, locRect.h}, 0,
+                           FlipMode::NONE);
+        locRect = camera.worldToScreen({100, 100, 1, 1}, winWidth, winHeight);
+        gfx->drawTextById(helloTextId1,
+                          {locRect.x, locRect.y, locRect.w, locRect.h});
+        gfx->drawTextById(ft, {0, 0, 0, 0});
+        gfx->endFrame();
+      }
+    });
+    */
+
+    InputKey KeyW{.keyId = KeyId::W, .type = DeviceType::Keyboard};
+    InputKey KeyA{.keyId = KeyId::A, .type = DeviceType::Keyboard};
+    InputKey KeyS{.keyId = KeyId::S, .type = DeviceType::Keyboard};
+    InputKey KeyD{.keyId = KeyId::D, .type = DeviceType::Keyboard};
+    InputKey KeyUp{.keyId = KeyId::ArrowUp, .type = DeviceType::Keyboard};
+    InputKey KeyDown{.keyId = KeyId::ArrowDown, .type = DeviceType::Keyboard};
+    input->setKeyId(KeyW);
+    input->setKeyId(KeyA);
+    input->setKeyId(KeyS);
+    input->setKeyId(KeyD);
+    input->setKeyId(KeyUp);
+    input->setKeyId(KeyDown);
+    ActionManager actionManager;
+    actionManager.actions["moveUp"] = InputAction{"moveUp", {KeyW}};
+    actionManager.actions["moveLeft"] = InputAction{"moveLeft", {KeyA}};
+    actionManager.actions["moveDown"] = InputAction{"moveDown", {KeyS}};
+    actionManager.actions["moveRight"] = InputAction{"moveRight", {KeyD}};
+    actionManager.actions["zoomUp"] = InputAction{"zoomUp", {KeyUp}};
+    actionManager.actions["zoomDown"] = InputAction{"zoomDown", {KeyDown}};
+    auto moveWASD = [&]() {
+      if (actionManager.IsActive("moveUp", input)) {
+        dst.y -= 15;
+        camera.position.y -= 15;
+      }
+      if (actionManager.IsActive("moveLeft", input)) {
+        dst.x -= 15;
+        camera.position.x -= 15;
+      }
+      if (actionManager.IsActive("moveDown", input)) {
+        dst.y += 15;
+        camera.position.y += 15;
+      }
+      if (actionManager.IsActive("moveRight", input)) {
+        dst.x += 15;
+        camera.position.x += 15;
+      }
+      if (actionManager.IsActive("zoomDown", input)) {
+        camera.zoom -= 0.005;
+        puts("zoom-");
+      }
+      if (actionManager.IsActive("zoomUp", input)) {
+        camera.zoom += 0.005;
+        puts("zoom+");
+      }
+    };
+    std::cout << "Init imgui\n";
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+    ImGui::StyleColorsDark();
+    std::cout << "Init imgui for sdl\n";
+    ImGui_ImplSDL3_InitForSDLRenderer(windowSDL, rendererSDL);
+    ImGui_ImplSDLRenderer3_Init(rendererSDL);
+    std::cout << "Event init\n";
+    using clock = std::chrono::high_resolution_clock;
+    auto lastTime = clock::now();
+    int frameCount = 0;
+    int ft = gfx->createText(fontId1, "FPS: ~", {0, 0, 0, 0});
+    SDL_Event event;
+    bool runnind = 1;
+    while (runnind) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(16));
+      // runnind = input->pollEvents();
+      while (SDL_PollEvent(&event)) {
+        ImGui_ImplSDL3_ProcessEvent(&event);
+        if (event.type == SDL_EVENT_QUIT)
+          runnind = false;
+      }
+
+      frameCount++;
+      auto now = clock::now();
+      std::chrono::duration<float> delta = now - lastTime;
+      if (delta.count() >= 1.0f) {
+        fps = frameCount;
+        frameCount = 0;
+        lastTime = now;
+        gfx->updateText(ft, "FPS: " + std::to_string(fps.load()));
+      }
+
+      ImGui_ImplSDLRenderer3_NewFrame();
+      ImGui_ImplSDL3_NewFrame();
+      ImGui::NewFrame();
+
+      ImGui::Begin("Hello, world!");
+      ImGui::Text("This is some useful text.");
+      ImGui::End();
+      ImGui::Render();
+      float winWidth = 800, winHeight = 600;
+      locRect = camera.worldToScreen(dst, winWidth, winHeight);
+      gfx->beginFrame({1.0f, 1.0f, 1.0f, 1.0f});
+      gfx->drawImageById(imageId1, {locRect.x, locRect.y, locRect.w, locRect.h},
+                         0, FlipMode::NONE);
+      locRect = camera.worldToScreen({400, 400, 400, 400}, winWidth, winHeight);
+      gfx->drawImageById(imageId2, {locRect.x, locRect.y, locRect.w, locRect.h},
+                         0, FlipMode::NONE);
+      locRect = camera.worldToScreen({100, 100, 1, 1}, winWidth, winHeight);
+      gfx->drawTextById(helloTextId1,
+                        {locRect.x, locRect.y, locRect.w, locRect.h});
+      gfx->drawTextById(ft, {0, 0, 0, 0});
+
+      ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), rendererSDL);
+      gfx->endFrame();
+      moveWASD();
     }
-    return 0;
+    runningRender = false;
+    // renderThread.join();
+    window->destroyWindow();
+    platform->shutdown();
+
+    ImGui_ImplSDLRenderer3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
+    ImGui::DestroyContext();
+
+  } catch (std::runtime_error &e) {
+    std::cout << e.what() << std::endl;
+    std::cin.get();
+  }
+  return 0;
 }
