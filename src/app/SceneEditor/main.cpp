@@ -1,13 +1,17 @@
-#include "../engine/Engine.h"
-#include "Module.h"
+#include "../../engine/Engine.h"
+#include <Module.h>
+#include <SDL3/SDL_video.h>
+#include <any>
 #include <iostream>
 #include <stdexcept>
 #include <thread>
 #include <chrono>
-#include "../core/ActionManager/ActionManager.h"
-#include "../core/ActionManager/InputAction.h"
-#include "../core/GameRender/GameSystem.h"
-#include "../core/GameRender/ResourceManager.h"
+#include "../../core/ActionManager/ActionManager.h"
+#include "../../core/ActionManager/InputAction.h"
+#include "../../core/GameRender/GameSystem.h"
+#include "../../core/GameRender/ResourceManager.h"
+
+#include <SDL3/SDL.h>
 
 int main(int argc, char** argv)
 {
@@ -37,6 +41,11 @@ int main(int argc, char** argv)
 
         auto handle = window->getWindowHandle();
         if (!gfx->init(handle, true)) { throw std::runtime_error("failed to init gfx"); }
+        
+//SDLTypes
+        WindowHandle hand = window->getWindowHandle();
+        SDL_Window* windowSDL = static_cast<SDL_Window*>(hand.handle);
+        SDL_Renderer* renderersDL = std::any_cast<SDL_Renderer*>(gfx->getContext());
 
         int imageId1 = gfx->loadImage("image/image1.png");
         Rect dst{400, 300, 200, 200};

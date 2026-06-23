@@ -15,6 +15,7 @@ add_executable(PG_Engine
     src/app/main.cpp
     src/core/EventDispatcher/EventDispatcher.cpp
     src/core/ActionManager/ActionManager.cpp
+    src/core/GameRender/GameSystem.cpp
 )
 
 target_include_directories(PG_Engine PRIVATE
@@ -28,6 +29,7 @@ add_definitions(-DUNICODE -D_UNICODE)
 add_subdirectory(src/platform/SDL3Platform)
 add_subdirectory(src/adapters/GFXSDL3Adapter)
 add_subdirectory(src/engine)
+add_subdirectory(src/app/SceneEditor)
 
 add_custom_target(copy_compile_commands ALL
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/compile_commands.json"

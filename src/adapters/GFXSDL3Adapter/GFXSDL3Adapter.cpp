@@ -124,6 +124,11 @@ std::vector<RenderDriverInfo> GFXSDL3Adapter::getRenderDevices()
 
     return out;
 }
+std::any GFXSDL3Adapter::getContext()
+{
+    if (renderer) { return renderer; }
+    return {};
+}
 
 /*============================================================================================*/
 
