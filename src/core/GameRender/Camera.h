@@ -8,12 +8,12 @@ struct Camera
     Vec2 position{0,0};
     float zoom = 1.0f;
 
-    Rect worldToScreen(Rect worldRect) const
+    Rect worldToScreen(Rect worldRect, float winWidth, float winHeight) const
     {
         return
         {
-            (worldRect.x - position.x) * zoom,
-            (worldRect.y - position.y) * zoom,
+            (worldRect.x - position.x) + winWidth/2,
+            (worldRect.y - position.y) + winHeight/2,
             worldRect.w * zoom,
             worldRect.h * zoom
         };
