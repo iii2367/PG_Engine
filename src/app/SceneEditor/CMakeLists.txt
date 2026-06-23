@@ -16,6 +16,7 @@ add_executable(SceneEditor
     ../../../lib/ImGuiSDL3/src/imgui_draw.cpp
     ../../../lib/ImGuiSDL3/src/imgui_tables.cpp
     ../../../lib/ImGuiSDL3/src/imgui_widgets.cpp
+    ../SceneEditor/ImGui/imguiInterface.cpp 
     #тут всі cpp
 )
 

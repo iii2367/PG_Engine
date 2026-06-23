@@ -4,9 +4,9 @@
 #include "../../engine/Engine.h"
 
 #include <SDL3/SDL_events.h>
-#include <imgui.h>
-#include <imgui_impl_sdl3.h>
-#include <imgui_impl_sdlrenderer3.h>
+
+#include "ImGui/imguiInterface.h"
+#include "imgui.h"
 
 #include <Module.h>
 #include <SDL3/SDL.h>
@@ -135,15 +135,15 @@ int main(int argc, char **argv) {
         puts("zoom+");
       }
     };
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-    ImGui::StyleColorsDark();
-    ImGui_ImplSDL3_InitForSDLRenderer(windowSDL, rendererSDL);
-    ImGui_ImplSDLRenderer3_Init(rendererSDL);
+    ImGui_Interface _Img_Interface(windowSDL, rendererSDL);
+    _Img_Interface.IMGUI_createContext();
+
+    auto _IMG_IO = _Img_Interface.IMGUI_initIO();
+
+    _Img_Interface.IMGUI_pickColor();
+
+    _Img_Interface.IMGUI_InitAllSDL3();
 
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
       std::this_thread::sleep_for(std::chrono::milliseconds(16));
       // runnind = input->pollEvents();
       while (SDL_PollEvent(&event)) {
-        ImGui_ImplSDL3_ProcessEvent(&event);
+        _Img_Interface.IMGUI_pollEvent(event);
         if (event.type == SDL_EVENT_QUIT)
           runnind = false;
       }
@@ -170,12 +170,10 @@ int main(int argc, char **argv) {
         gfx->updateText(ft, "FPS: " + std::to_string(fps.load()));
       }
 
-      ImGui_ImplSDLRenderer3_NewFrame();
-      ImGui_ImplSDL3_NewFrame();
-      ImGui::NewFrame();
+      _Img_Interface.IMGUI_NewFrame();
 
-      ImGui::Begin("ImGui Window", nullptr,
-                   ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoResize);
+      _Img_Interface.IMGUI_Begin();
+      // begin
       if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
           if (ImGui::MenuItem("Open..", "Ctrl+O")) {
@@ -189,16 +187,18 @@ int main(int argc, char **argv) {
         }
         ImGui::EndMenuBar();
       }
+      // end
+      _Img_Interface.IMGUI_End();
 
-      ImGui::End();
-      ImGui::Render();
+      // render
+      _Img_Interface.IMGUI_Render();
+
       float winWidth = 800, winHeight = 600;
       gfx->beginFrame({1.0f, 1.0f, 1.0f, 1.0f});
       locRect = camera.worldToScreen({400, 400, 400, 400}, winWidth, winHeight);
       locRect = camera.worldToScreen({100, 100, 1, 1}, winWidth, winHeight);
       gfx->drawTextById(ft, {0, 0, 0, 0});
-
-      ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), rendererSDL);
+      _Img_Interface.IMGUI_RenderDrawData();
       gfx->endFrame();
       moveWASD();
     }
@@ -206,10 +206,6 @@ int main(int argc, char **argv) {
     // renderThread.join();
     window->destroyWindow();
     platform->shutdown();
-
-    ImGui_ImplSDLRenderer3_Shutdown();
-    ImGui_ImplSDL3_Shutdown();
-    ImGui::DestroyContext();
 
   } catch (std::runtime_error &e) {
     std::cout << e.what() << std::endl;
