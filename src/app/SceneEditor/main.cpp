@@ -1,7 +1,6 @@
 #include "../../core/ActionManager/ActionManager.h"
 #include "../../core/ActionManager/InputAction.h"
 #include "../../core/GameRender/GameSystem.h"
-#include "../../core/GameRender/ResourceManager.h"
 #include "../../engine/Engine.h"
 
 #include <SDL3/SDL_events.h>
@@ -30,7 +29,6 @@ int main(int argc, char **argv) {
     auto window = engine->getPlatform()->getWindow();
     auto input = engine->getPlatform()->getInput();
     auto audio = engine->getPlatform()->getAudio();
-    audio->initAudio();
     auto eventDispatcher = engine->getEventDispatcher();
     auto gfx = engine->getGFXAdapter();
 
@@ -38,10 +36,6 @@ int main(int argc, char **argv) {
     winInfo.decorated = true;
     winInfo.resizable = true;
     window->createWindow(winInfo);
-
-    std::string audioTag = "Music";
-    auto audioId1 = audio->addAudioStream("music/TestStream1.wav", audioTag);
-    audio->loopAudioById(audioId1);
 
     auto handle = window->getWindowHandle();
     if (!gfx->init(handle, true)) {
@@ -54,12 +48,7 @@ int main(int argc, char **argv) {
     SDL_Renderer *rendererSDL =
         std::any_cast<SDL_Renderer *>(gfx->getContext());
 
-    int imageId1 = gfx->loadImage("image/image1.png");
-    Rect dst{400, 300, 200, 200};
-    int imageId2 = gfx->loadImage("image/Alf.png");
-
     int fontId1 = gfx->loadFont("font/ChelseaMarket.ttf", 22);
-    int helloTextId1 = gfx->createText(fontId1, "Hello World", {0, 0, 0, 0});
 
     std::atomic<bool> runningRender{true};
     std::atomic<int> fps{0};
@@ -126,19 +115,15 @@ int main(int argc, char **argv) {
     actionManager.actions["zoomDown"] = InputAction{"zoomDown", {KeyDown}};
     auto moveWASD = [&]() {
       if (actionManager.IsActive("moveUp", input)) {
-        dst.y -= 15;
         camera.position.y -= 15;
       }
       if (actionManager.IsActive("moveLeft", input)) {
-        dst.x -= 15;
         camera.position.x -= 15;
       }
       if (actionManager.IsActive("moveDown", input)) {
-        dst.y += 15;
         camera.position.y += 15;
       }
       if (actionManager.IsActive("moveRight", input)) {
-        dst.x += 15;
         camera.position.x += 15;
       }
       if (actionManager.IsActive("zoomDown", input)) {
@@ -150,7 +135,6 @@ int main(int argc, char **argv) {
         puts("zoom+");
       }
     };
-    std::cout << "Init imgui\n";
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -158,10 +142,9 @@ int main(int argc, char **argv) {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
     ImGui::StyleColorsDark();
-    std::cout << "Init imgui for sdl\n";
     ImGui_ImplSDL3_InitForSDLRenderer(windowSDL, rendererSDL);
     ImGui_ImplSDLRenderer3_Init(rendererSDL);
-    std::cout << "Event init\n";
+
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
     int frameCount = 0;
@@ -191,21 +174,28 @@ int main(int argc, char **argv) {
       ImGui_ImplSDL3_NewFrame();
       ImGui::NewFrame();
 
-      ImGui::Begin("Hello, world!");
-      ImGui::Text("This is some useful text.");
+      ImGui::Begin("ImGui Window", nullptr,
+                   ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoResize);
+      if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+          if (ImGui::MenuItem("Open..", "Ctrl+O")) {
+          }
+          if (ImGui::MenuItem("Save", "Ctrl+S")) {
+          }
+          if (ImGui::MenuItem("Close", "Ctrl+W")) {
+            runnind = 0;
+          }
+          ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+      }
+
       ImGui::End();
       ImGui::Render();
       float winWidth = 800, winHeight = 600;
-      locRect = camera.worldToScreen(dst, winWidth, winHeight);
       gfx->beginFrame({1.0f, 1.0f, 1.0f, 1.0f});
-      gfx->drawImageById(imageId1, {locRect.x, locRect.y, locRect.w, locRect.h},
-                         0, FlipMode::NONE);
       locRect = camera.worldToScreen({400, 400, 400, 400}, winWidth, winHeight);
-      gfx->drawImageById(imageId2, {locRect.x, locRect.y, locRect.w, locRect.h},
-                         0, FlipMode::NONE);
       locRect = camera.worldToScreen({100, 100, 1, 1}, winWidth, winHeight);
-      gfx->drawTextById(helloTextId1,
-                        {locRect.x, locRect.y, locRect.w, locRect.h});
       gfx->drawTextById(ft, {0, 0, 0, 0});
 
       ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), rendererSDL);
