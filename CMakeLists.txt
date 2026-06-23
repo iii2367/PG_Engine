@@ -14,6 +14,7 @@ set(CMAKE_COMPILE_COMMANDS_JSON ON)
 add_executable(PG_Engine
     src/app/main.cpp
     src/core/EventDispatcher/EventDispatcher.cpp
+    src/core/ActionManager/ActionManager.cpp
 )
 
 target_include_directories(PG_Engine PRIVATE

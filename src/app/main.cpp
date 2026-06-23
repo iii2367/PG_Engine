@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <thread>
 #include <chrono>
+#include "../core/ActionManager/ActionManager.h"
+#include "../core/ActionManager/InputAction.h"
 
 int main(int argc, char *argv[]) {
   try {
@@ -101,12 +103,17 @@ input->setKeyId(KeyW);
 input->setKeyId(KeyA);
 input->setKeyId(KeyS);
 input->setKeyId(KeyD);
+ActionManager actionManager;
+actionManager.actions["moveUp"] = InputAction{"moveUp", {KeyW}};
+actionManager.actions["moveLeft"] = InputAction{"moveLeft", {KeyA}};
+actionManager.actions["moveDown"] = InputAction{"moveDown", {KeyS}};
+actionManager.actions["moveRight"] = InputAction{"moveRight", {KeyD}};
 auto moveWASD = [&]()
 {
-    if (input->getKeyState(KeyW)) { dst.y -= 15; }
-    if (input->getKeyState(KeyA)) { dst.x -= 15; }
-    if (input->getKeyState(KeyS)) { dst.y += 15; }
-    if (input->getKeyState(KeyD)) { dst.x += 15; }
+    if (actionManager.IsActive("moveUp", input)) { dst.y -= 15; }
+    if (actionManager.IsActive("moveLeft", input)) { dst.x -= 15; }
+    if (actionManager.IsActive("moveDown", input)) { dst.y += 15; }
+    if (actionManager.IsActive("moveRight", input)) { dst.x += 15; }
 };
 
 InputKey MouseL {.keyId=KeyId::MouseLeft, .type=DeviceType::Mouse};
