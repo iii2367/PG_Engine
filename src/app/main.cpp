@@ -6,6 +6,8 @@
 #include <chrono>
 #include "../core/ActionManager/ActionManager.h"
 #include "../core/ActionManager/InputAction.h"
+#include "../core/GameRender/GameSystem.h"
+#include "../core/GameRender/ResourceManager.h"
 
 int main(int argc, char *argv[]) {
   try {
