@@ -6,7 +6,7 @@
 #include <chrono>
 #include "../core/ActionManager/ActionManager.h"
 #include "../core/ActionManager/InputAction.h"
-#include "../core/GameRender/GameSystem.h"
+#include "../core/GameRender/RenderSystem.h"
 #include "../core/GameRender/ResourceManager.h"
 #include "../core/GameRender/Sprite.h"
 
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
         AnimSheet.frameCountX = 8;
         AnimSheet.frameWidth = 108;
         AnimSheet.frameHeight = 140;
-        AnimSheet.textureId = resMan.loadTexture("image/Anim.png"); 
+        AnimSheet.sprite.textureId = resMan.loadTexture("image/Anim.png"); 
         Animation runAnim;
         runAnim.row = 0;
         runAnim.frames = 8;
@@ -111,16 +111,9 @@ float anMov = 200;
                 gfx->drawImageById(imageId1, {locRect.x, locRect.y, locRect.w, locRect.h}, 0, FlipMode::NONE);
         
                 anim.update(dt);
-Rect src = anim.getSourceRect();
-        Rect dstAnim = camera.worldToScreen({anMov,200,108,140}, winWidth, winHeight);
-anMov += 10;
-        gfx->drawImageRegionById(
-            AnimSheet.textureId,
-            src,
-            dstAnim,
-            0,
-            FlipMode::NONE
-        );
+                AnimSheet.sprite.dst = camera.worldToScreen({anMov,200,108,140}, winWidth, winHeight);
+
+            gfx->drawImageRegionById(AnimSheet.sprite.textureId, AnimSheet.sprite.src, AnimSheet.sprite.dst, 0, FlipMode::NONE);
                 
                 locRect = camera.worldToScreen({400,400,400,400}, winWidth, winHeight);
                 gfx->drawImageById(imageId2, {locRect.x,locRect.y,locRect.w,locRect.h}, 0, FlipMode::NONE);

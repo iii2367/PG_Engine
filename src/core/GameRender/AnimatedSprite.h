@@ -28,8 +28,7 @@ public:
 
     void update(float dt)
     {
-        if (!playing || !currentAnim)
-            return;
+        if (!playing || !currentAnim) { return; }
 
         accumulator += dt;
 
@@ -49,15 +48,16 @@ public:
                 }
             }
         }
+        if (sheet) { sheet->getFrame(currentFrame, currentAnim->row); }
     }
 
-    Rect getSourceRect() const
+   /* Rect getSourceRect() const
     {
         if (!sheet)
             return {0,0,0,0};
 
-        return sheet->getFrame(currentFrame, currentAnim->row);
-    }
+        //return sheet->getFrame(currentFrame, currentAnim->row);
+    }*/
 
 public:
 

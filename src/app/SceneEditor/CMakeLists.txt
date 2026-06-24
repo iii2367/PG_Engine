@@ -8,7 +8,7 @@ add_executable(SceneEditor
     main.cpp
     ../../core/EventDispatcher/EventDispatcher.cpp
     ../../core/ActionManager/ActionManager.cpp
-    ../../core/GameRender/GameSystem.cpp
+    ../../core/GameRender/RenderSystem.cpp
     #тут всі cpp
 )
 

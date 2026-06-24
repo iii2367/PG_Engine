@@ -2,10 +2,11 @@
 #define SPRITESHEET_H
 
 #include "../../ports/GFXPort/GFXPort.h"
+#include "Sprite.h"
 
 struct SpriteSheet
 {
-    int textureId = -1;
+    Sprite sprite{};
 
     int frameCountX = 1;
     int animationCountY = 1;
@@ -13,15 +14,12 @@ struct SpriteSheet
     int frameWidth = 0;
     int frameHeight = 0; 
 
-    Rect getFrame(int frame, int animation) const
+    void getFrame(int frame, int animation)
     {
-        return Rect
-        {
-            static_cast<float>(frame * frameWidth),
-            static_cast<float>(animation * frameHeight),
-            static_cast<float>(frameWidth),
-            static_cast<float>(frameHeight)
-        };
+        sprite.src.x = static_cast<float>(frame * frameWidth);
+        sprite.src.y = static_cast<float>(animation * frameHeight);
+        sprite.src.w = static_cast<float>(frameWidth);
+        sprite.src.h = static_cast<float>(frameHeight);
     }    
 };
 
