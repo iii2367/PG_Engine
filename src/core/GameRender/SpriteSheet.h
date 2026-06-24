@@ -9,7 +9,7 @@ struct SpriteSheet
     Sprite sprite{};
 
     int frameCountX = 1;
-    int animationCountY = 1;
+    int frameCountY = 1;
 
     int frameWidth = 0;
     int frameHeight = 0; 

@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Sprite.h"
 #include "AnimatedSprite.h"
+#include "SpriteSheet.h"
 #include <unordered_map>
 
 enum class RenderLayer
@@ -36,25 +37,25 @@ struct RenderCommand
 class RenderSystem
 {
 public:
-    explicit RenderSystem(IGFXPort& gfx) : gfx(&gfx) {}
+    explicit RenderSystem(IGFXPort& gfx);
 
-    void submit(int id, const RenderCommand& cmd);
-
-    void drawSprite(int id);
-    void drawAnimated(int id);
-    void drawText(int id);
+    void submitSprite(RenderCommand cmd, Sprite sprite);
+    void sublitAnimated(RenderCommand cmd, SpriteSheet spriteSheet);
+    void submitText(RenderCommand cmd);
     
-    void setCamera(Camera& camera);
+    void setCamera(Camera& cam);
 
-    void present(float w, float h);
+    void present(float winW, float winH);
 
 private:
-    IGFXPort* gfx;
-    std::unordered_map<int, Sprite> sprites;
-    std::unordered_map<int, AnimatedSprite*> animated;
+    IGFXPort* gfx; 
+    Camera* camera = nullptr;
 
-    Camera* camera;
-
-    std::vector<RenderCommand> commandBuffer;
+    struct CommandBuffer
+    {
+        RenderCommand cmd;
+        std::any data;
+    };
+    std::vector<CommandBuffer> cmdBuffer;
 };
 #endif

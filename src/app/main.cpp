@@ -54,7 +54,7 @@ int main(int argc, char** argv)
         Igun.flip = FlipMode::NONE; 
 
         SpriteSheet AnimSheet;
-        AnimSheet.animationCountY = 2;
+        AnimSheet.frameCountY = 2;
         AnimSheet.frameCountX = 8;
         AnimSheet.frameWidth = 108;
         AnimSheet.frameHeight = 140;
@@ -73,6 +73,18 @@ float anMov = 200;
         camera.position = {0,0};
         camera.zoom = 1.0f;
         Rect locRect{0,0,0,0};
+
+RenderSystem rs(*gfx);
+Sprite Light;
+Light.dst = {800, 200, 400, 400};
+Light.textureId = resMan.loadTexture("image/Light.png");
+rs.setCamera(camera);
+RenderCommand LightCMD;
+LightCMD.entityId = 1;
+LightCMD.layer = RenderLayer::GameObjects;
+LightCMD.type = RenderCommand::Type::Sprite;
+LightCMD.z = 1.0f;
+
         std::thread renderThread([&] 
         {
             using clock = std::chrono::high_resolution_clock;
@@ -112,6 +124,8 @@ float anMov = 200;
         
                 anim.update(dt);
                 AnimSheet.sprite.dst = camera.worldToScreen({anMov,200,108,140}, winWidth, winHeight);
+rs.submitSprite(LightCMD, Light);
+rs.present(winWidth, winHeight);
 
             gfx->drawImageRegionById(AnimSheet.sprite.textureId, AnimSheet.sprite.src, AnimSheet.sprite.dst, 0, FlipMode::NONE);
                 
