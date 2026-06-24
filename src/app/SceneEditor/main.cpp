@@ -172,7 +172,8 @@ int main(int argc, char **argv) {
 
       _Img_Interface.IMGUI_NewFrame();
 
-      _Img_Interface.IMGUI_Begin();
+      ImGuiWindowFlags flags = ImGuiWindowFlags_MenuBar;
+      _Img_Interface.IMGUI_Begin("My window", flags);
       // begin
       if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
