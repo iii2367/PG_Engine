@@ -48,19 +48,25 @@ int main(int argc, char** argv)
     
         ResourceManager resMan(*gfx);
         Sprite Igun;
-        Igun.textureId =  resMan.loadTexture("image/igun.png");
-        Igun.flip = FlipMode::NONE;
+        Igun.textureId = resMan.loadTexture("image/igun.png");
+        Igun.dst = {0,0,200,200};
         Igun.angle = 0;
-        Igun.rect = {0,0,200,200}; 
+        Igun.flip = FlipMode::NONE; 
 
-        SpriteSheet Anim;
-        Anim.animationCountY = 1;
-        Anim.frameCountX = 6;
-        Anim.rect = {200,200,600,100};
-        Anim.textureId = resMan.loadTexture("image/Anim3.png");
-        Anim.setSizeFrame();
-        int ii = 0;
-
+        SpriteSheet AnimSheet;
+        AnimSheet.animationCountY = 2;
+        AnimSheet.frameCountX = 8;
+        AnimSheet.frameWidth = 108;
+        AnimSheet.frameHeight = 140;
+        AnimSheet.textureId = resMan.loadTexture("image/Anim.png"); 
+        Animation runAnim;
+        runAnim.row = 0;
+        runAnim.frames = 8;
+        runAnim.frameTime = 0.1f;
+        runAnim.loop = true;
+        AnimatedSprite anim(&AnimSheet);
+        anim.play(runAnim);
+float anMov = 200;
         std::atomic<bool> runningRender{true};
         std::atomic<int> fps{0};
         Camera camera;
@@ -72,6 +78,7 @@ int main(int argc, char** argv)
             using clock = std::chrono::high_resolution_clock;
             auto lastTime = clock::now();
             int frameCount = 0;
+            float fpsTimer = 0;
             int ft = gfx->createText(fontId1, "FPS: ~", {0, 0, 0, 0});
 
 
@@ -80,26 +87,44 @@ int main(int argc, char** argv)
                 frameCount++;
                 auto now = clock::now();
                 std::chrono::duration<float> delta = now - lastTime;
-                if (delta.count() >= 1.0f)
-                {
-                    fps = frameCount;   
-                    frameCount = 0;
-                    lastTime = now;
-                    gfx->updateText(ft, "FPS: " + std::to_string(fps.load()));
-                }
+                lastTime = now;
+
+                float dt = delta.count();
+                if (dt > 0.1f) { dt = 0.1f; }
+
+                fpsTimer += dt;
+
+        if (fpsTimer >= 1.0f)
+        {
+            fps = frameCount;
+            frameCount = 0;
+            fpsTimer = 0;
+
+            gfx->updateText(ft, "FPS: " + std::to_string(fps.load()));
+        }
                 
                 float winWidth=800, winHeight=600;
                 gfx->beginFrame({1.0f, 1.0f, 1.0f, 1.0f}); 
-                locRect = camera.worldToScreen(Igun.rect, winWidth, winHeight);
+                locRect = camera.worldToScreen(Igun.dst, winWidth, winHeight);
                 gfx->drawImageById(Igun.textureId, locRect, Igun.angle, Igun.flip);
                 locRect = camera.worldToScreen(dst, winWidth, winHeight);
                 gfx->drawImageById(imageId1, {locRect.x, locRect.y, locRect.w, locRect.h}, 0, FlipMode::NONE);
         
-                gfx->drawImageRegionById(Anim.textureId, /*Anim.getFrame(ii, 0)*/{(float)(0+100*ii), 100,100,100}, Anim.rect, 0, FlipMode::NONE);
-
+                anim.update(dt);
+Rect src = anim.getSourceRect();
+        Rect dstAnim = camera.worldToScreen({anMov,200,108,140}, winWidth, winHeight);
+anMov += 10;
+        gfx->drawImageRegionById(
+            AnimSheet.textureId,
+            src,
+            dstAnim,
+            0,
+            FlipMode::NONE
+        );
+                
                 locRect = camera.worldToScreen({400,400,400,400}, winWidth, winHeight);
                 gfx->drawImageById(imageId2, {locRect.x,locRect.y,locRect.w,locRect.h}, 0, FlipMode::NONE);
-                locRect = camera.worldToScreen({100,100,1,1}, winWidth, winHeight);
+                locRect = camera.worldToScreen({100,100,0,0}, winWidth, winHeight);
                 gfx->drawTextById(helloTextId1, {locRect.x, locRect.y, locRect.w, locRect.h}); 
                 gfx->drawTextById(ft, {0, 0, 0, 0});
                 gfx->endFrame();
@@ -132,7 +157,7 @@ int t = std::time(0);
             if (actionManager.IsActive("moveDown", input)) { dst.y += 15; camera.position.y+=15;}
             if (actionManager.IsActive("moveRight", input)) { dst.x += 15; camera.position.x+=15;}
             if (actionManager.IsActive("zoomDown", input)) { camera.zoom-=0.005; puts("zoom-");}
-            if (actionManager.IsActive("zoomUp", input)) { /*camera.zoom+=0.005*/;if(ii < 6 && std::time(0) != t) {ii++; t = std::time(0);} else if (ii == 6) {ii=0;}; puts("zoom+");}
+            if (actionManager.IsActive("zoomUp", input)) { camera.zoom+=0.005; puts("zoom+");}
         };
 
         bool runnind = 1;

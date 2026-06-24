@@ -1,7 +1,7 @@
 #ifndef SPRITESHEET_H
 #define SPRITESHEET_H
 
-#include "../Math/Math.h"
+#include "../../ports/GFXPort/GFXPort.h"
 
 struct SpriteSheet
 {
@@ -10,27 +10,19 @@ struct SpriteSheet
     int frameCountX = 1;
     int animationCountY = 1;
 
-    Rect rect {0, 0, 0, 0};
-
-    float frameW = 0;
-    float frameH = 0;
-
-    void setSizeFrame()
-    {
-        frameW = rect.w / frameCountX;
-        frameH = rect.h / animationCountY;
-    }
+    int frameWidth = 0;
+    int frameHeight = 0; 
 
     Rect getFrame(int frame, int animation) const
     {
-        return
+        return Rect
         {
-            rect.w + frame * frameW,
-            rect.h + animation * frameH,
-            frameW,
-            frameH
+            static_cast<float>(frame * frameWidth),
+            static_cast<float>(animation * frameHeight),
+            static_cast<float>(frameWidth),
+            static_cast<float>(frameHeight)
         };
-    }
+    }    
 };
 
 #endif
