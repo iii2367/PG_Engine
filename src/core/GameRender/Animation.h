@@ -3,12 +3,9 @@
 
 struct Animation
 {
-    int row = 0;
-
-    int frames = 1;
-
+    int row = 0;          
+    int frames = 1;       
     float frameTime = 0.1f;
-
     bool loop = true;
 };
 

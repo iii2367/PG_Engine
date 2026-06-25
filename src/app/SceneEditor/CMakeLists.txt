@@ -8,7 +8,6 @@ add_executable(SceneEditor
     main.cpp
     ../../core/EventDispatcher/EventDispatcher.cpp
     ../../core/ActionManager/ActionManager.cpp
-    ../../core/GameRender/GameSystem.cpp
     ../../../lib/ImGuiSDL3/backend/imgui_impl_sdl3.cpp
     ../../../lib/ImGuiSDL3/backend/imgui_impl_sdlrenderer3.cpp
     ../../../lib/ImGuiSDL3/src/imgui.cpp
@@ -17,6 +16,7 @@ add_executable(SceneEditor
     ../../../lib/ImGuiSDL3/src/imgui_tables.cpp
     ../../../lib/ImGuiSDL3/src/imgui_widgets.cpp
     ../SceneEditor/ImGui/imguiInterface.cpp 
+    ../../core/GameRender/RenderSystem.cpp
     #тут всі cpp
 )
 

@@ -1,32 +1,26 @@
 #ifndef SPRITESHEET_H
 #define SPRITESHEET_H
 
-#include "../Math/Math.h"
+#include "../../ports/GFXPort/GFXPort.h"
+#include "Sprite.h"
 
 struct SpriteSheet
 {
-    int textureId = -1;
+    Sprite sprite{};
 
     int frameCountX = 1;
-    int animationCountY = 1;
+    int frameCountY = 1;
 
-    int textureWidth = 0;
-    int textureHeight = 0;
+    int frameWidth = 0;
+    int frameHeight = 0; 
 
-    Rect getFrame(int frame, int animation) const
+    void getFrame(int frame, int animation)
     {
-        float frameW = textureWidth / frameCountX;
-
-        float frameH = textureHeight / animationCountY;
-
-        return
-        {
-            frame * frameW,
-            animation * frameH,
-            frameW,
-            frameH
-        };
-    }
+        sprite.src.x = static_cast<float>(frame * frameWidth);
+        sprite.src.y = static_cast<float>(animation * frameHeight);
+        sprite.src.w = static_cast<float>(frameWidth);
+        sprite.src.h = static_cast<float>(frameHeight);
+    }    
 };
 
 #endif

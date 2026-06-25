@@ -15,7 +15,7 @@ add_executable(PG_Engine
     src/app/main.cpp
     src/core/EventDispatcher/EventDispatcher.cpp
     src/core/ActionManager/ActionManager.cpp
-    src/core/GameRender/GameSystem.cpp
+    src/core/GameRender/RenderSystem.cpp
 )
 
 target_include_directories(PG_Engine PRIVATE
