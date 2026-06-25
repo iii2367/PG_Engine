@@ -8,6 +8,14 @@ add_executable(SceneEditor
     main.cpp
     ../../core/EventDispatcher/EventDispatcher.cpp
     ../../core/ActionManager/ActionManager.cpp
+    ../../../lib/ImGuiSDL3/backend/imgui_impl_sdl3.cpp
+    ../../../lib/ImGuiSDL3/backend/imgui_impl_sdlrenderer3.cpp
+    ../../../lib/ImGuiSDL3/src/imgui.cpp
+    ../../../lib/ImGuiSDL3/src/imgui_demo.cpp
+    ../../../lib/ImGuiSDL3/src/imgui_draw.cpp
+    ../../../lib/ImGuiSDL3/src/imgui_tables.cpp
+    ../../../lib/ImGuiSDL3/src/imgui_widgets.cpp
+    ../SceneEditor/ImGui/imguiInterface.cpp 
     ../../core/GameRender/RenderSystem.cpp
     #тут всі cpp
 )
@@ -19,6 +27,8 @@ target_link_libraries(SceneEditor PRIVATE SDL3::SDL3) # тут якщо є лі�
 target_include_directories(SceneEditor PRIVATE
     #тут пиши шлях до заголовків бібліотеки щоб можна було підключати <> а не повним шляхом ""
     ../../../lib/glm
+    ../../../lib/ImGuiSDL3/backend
+    ../../../lib/ImGuiSDL3/src
     ../../utils
 )
 
