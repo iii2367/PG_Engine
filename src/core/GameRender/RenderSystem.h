@@ -4,9 +4,9 @@
 #include "../../ports/GFXPort/GFXPort.h"
 #include "Camera.h"
 #include "Sprite.h"
-#include "AnimatedSprite.h"
+#include "PlayLoad.h"
 #include "SpriteSheet.h"
-#include <unordered_map>
+#include <variant>
 
 enum class RenderLayer
 {
@@ -41,7 +41,7 @@ public:
 
     void submitSprite(RenderCommand cmd, Sprite sprite);
     void sublitAnimated(RenderCommand cmd, SpriteSheet spriteSheet);
-    void submitText(RenderCommand cmd);
+    void submitText(RenderCommand cmd, Text text);
     
     void setCamera(Camera& cam);
 
@@ -54,7 +54,7 @@ private:
     struct CommandBuffer
     {
         RenderCommand cmd;
-        std::any data;
+        std::variant<SpritePayload, AnimatedPayload, TextPayload> data;
     };
     std::vector<CommandBuffer> cmdBuffer;
 };

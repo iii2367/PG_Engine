@@ -9,6 +9,7 @@
 #include "../core/GameRender/RenderSystem.h"
 #include "../core/GameRender/ResourceManager.h"
 #include "../core/GameRender/Sprite.h"
+#include "../core/GameRender/AnimatedSprite.h"
 
 int main(int argc, char** argv)
 {
@@ -85,6 +86,17 @@ LightCMD.layer = RenderLayer::GameObjects;
 LightCMD.type = RenderCommand::Type::Sprite;
 LightCMD.z = 1.0f;
 
+int txt = gfx->createText(fontId1, "Text test", {0, 0, 0, 0});
+RenderCommand TextCMD;
+TextCMD.entityId = 2;
+TextCMD.layer = RenderLayer::HUD;
+TextCMD.type = RenderCommand::Type::Text;
+TextCMD.z = 1.0f;
+Text textDa;
+textDa.textId = txt;
+textDa.dst = {0,600,0,0};
+
+
         std::thread renderThread([&] 
         {
             using clock = std::chrono::high_resolution_clock;
@@ -124,10 +136,11 @@ LightCMD.z = 1.0f;
         
                 anim.update(dt);
                 AnimSheet.sprite.dst = camera.worldToScreen({anMov,200,108,140}, winWidth, winHeight);
-rs.submitSprite(LightCMD, Light);
-rs.present(winWidth, winHeight);
+                rs.submitSprite(LightCMD, Light);
+                rs.submitText(TextCMD, textDa);
+                rs.present(winWidth, winHeight);
 
-            gfx->drawImageRegionById(AnimSheet.sprite.textureId, AnimSheet.sprite.src, AnimSheet.sprite.dst, 0, FlipMode::NONE);
+                gfx->drawImageRegionById(AnimSheet.sprite.textureId, AnimSheet.sprite.src, AnimSheet.sprite.dst, 0, FlipMode::NONE);
                 
                 locRect = camera.worldToScreen({400,400,400,400}, winWidth, winHeight);
                 gfx->drawImageById(imageId2, {locRect.x,locRect.y,locRect.w,locRect.h}, 0, FlipMode::NONE);
