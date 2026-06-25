@@ -8,7 +8,7 @@
 #include <chrono>
 #include "../../core/ActionManager/ActionManager.h"
 #include "../../core/ActionManager/InputAction.h"
-#include "../../core/GameRender/GameSystem.h"
+#include "../../core/GameRender/RenderSystem.h"
 #include "../../core/GameRender/ResourceManager.h"
 
 #include <SDL3/SDL.h>

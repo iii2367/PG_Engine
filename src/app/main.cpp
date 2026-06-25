@@ -6,8 +6,10 @@
 #include <chrono>
 #include "../core/ActionManager/ActionManager.h"
 #include "../core/ActionManager/InputAction.h"
-#include "../core/GameRender/GameSystem.h"
+#include "../core/GameRender/RenderSystem.h"
 #include "../core/GameRender/ResourceManager.h"
+#include "../core/GameRender/Sprite.h"
+#include "../core/GameRender/AnimatedSprite.h"
 
 int main(int argc, char** argv)
 {
@@ -44,18 +46,63 @@ int main(int argc, char** argv)
 
         int fontId1 = gfx->loadFont("font/ChelseaMarket.ttf", 22);
         int helloTextId1 = gfx->createText(fontId1, "Hello World", {0, 0, 0, 0});
+    
+        ResourceManager resMan(*gfx);
+        Sprite Igun;
+        Igun.textureId = resMan.loadTexture("image/igun.png");
+        Igun.dst = {0,0,200,200};
+        Igun.angle = 0;
+        Igun.flip = FlipMode::NONE; 
 
+        SpriteSheet AnimSheet;
+        AnimSheet.frameCountY = 2;
+        AnimSheet.frameCountX = 8;
+        AnimSheet.frameWidth = 108;
+        AnimSheet.frameHeight = 140;
+        AnimSheet.sprite.textureId = resMan.loadTexture("image/Anim.png"); 
+        Animation runAnim;
+        runAnim.row = 0;
+        runAnim.frames = 8;
+        runAnim.frameTime = 0.1f;
+        runAnim.loop = true;
+        AnimatedSprite anim(&AnimSheet);
+        anim.play(runAnim);
+float anMov = 200;
         std::atomic<bool> runningRender{true};
         std::atomic<int> fps{0};
         Camera camera;
         camera.position = {0,0};
         camera.zoom = 1.0f;
         Rect locRect{0,0,0,0};
+
+RenderSystem rs(*gfx);
+Sprite Light;
+Light.dst = {800, 200, 400, 400};
+Light.textureId = resMan.loadTexture("image/Light.png");
+rs.setCamera(camera);
+RenderCommand LightCMD;
+LightCMD.entityId = 1;
+LightCMD.layer = RenderLayer::GameObjects;
+LightCMD.type = RenderCommand::Type::Sprite;
+LightCMD.z = 1.0f;
+
+int txt = gfx->createText(fontId1, "Text test", {0, 0, 0, 0});
+RenderCommand TextCMD;
+TextCMD.entityId = 2;
+TextCMD.layer = RenderLayer::HUD;
+TextCMD.type = RenderCommand::Type::Text;
+TextCMD.z = 1.0f;
+Text textDa;
+textDa.textId = txt;
+textDa.dst = {0,600,0,0};
+
+
         std::thread renderThread([&] 
         {
             using clock = std::chrono::high_resolution_clock;
             auto lastTime = clock::now();
             int frameCount = 0;
+            float fpsTimer = 0;
             int ft = gfx->createText(fontId1, "FPS: ~", {0, 0, 0, 0});
 
 
@@ -64,27 +111,46 @@ int main(int argc, char** argv)
                 frameCount++;
                 auto now = clock::now();
                 std::chrono::duration<float> delta = now - lastTime;
-                if (delta.count() >= 1.0f)
-                {
-                    fps = frameCount;   
-                    frameCount = 0;
-                    lastTime = now;
-                    gfx->updateText(ft, "FPS: " + std::to_string(fps.load()));
-                }
+                lastTime = now;
+
+                float dt = delta.count();
+                if (dt > 0.1f) { dt = 0.1f; }
+
+                fpsTimer += dt;
+
+        if (fpsTimer >= 1.0f)
+        {
+            fps = frameCount;
+            frameCount = 0;
+            fpsTimer = 0;
+
+            gfx->updateText(ft, "FPS: " + std::to_string(fps.load()));
+        }
                 
                 float winWidth=800, winHeight=600;
-                locRect = camera.worldToScreen(dst, winWidth, winHeight);
                 gfx->beginFrame({1.0f, 1.0f, 1.0f, 1.0f}); 
+                locRect = camera.worldToScreen(Igun.dst, winWidth, winHeight);
+                gfx->drawImageById(Igun.textureId, locRect, Igun.angle, Igun.flip);
+                locRect = camera.worldToScreen(dst, winWidth, winHeight);
                 gfx->drawImageById(imageId1, {locRect.x, locRect.y, locRect.w, locRect.h}, 0, FlipMode::NONE);
+        
+                anim.update(dt);
+                AnimSheet.sprite.dst = camera.worldToScreen({anMov,200,108,140}, winWidth, winHeight);
+                rs.submitSprite(LightCMD, Light);
+                rs.submitText(TextCMD, textDa);
+                rs.present(winWidth, winHeight);
+
+                gfx->drawImageRegionById(AnimSheet.sprite.textureId, AnimSheet.sprite.src, AnimSheet.sprite.dst, 0, FlipMode::NONE);
+                
                 locRect = camera.worldToScreen({400,400,400,400}, winWidth, winHeight);
                 gfx->drawImageById(imageId2, {locRect.x,locRect.y,locRect.w,locRect.h}, 0, FlipMode::NONE);
-                locRect = camera.worldToScreen({100,100,1,1}, winWidth, winHeight);
-                gfx->drawTextById(helloTextId1, {locRect.x, locRect.y, locRect.w, locRect.h});
+                locRect = camera.worldToScreen({100,100,0,0}, winWidth, winHeight);
+                gfx->drawTextById(helloTextId1, {locRect.x, locRect.y, locRect.w, locRect.h}); 
                 gfx->drawTextById(ft, {0, 0, 0, 0});
                 gfx->endFrame();
             }
         });
-
+int t = std::time(0);
         InputKey KeyW {.keyId=KeyId::W, .type=DeviceType::Keyboard};
         InputKey KeyA {.keyId=KeyId::A, .type=DeviceType::Keyboard};
         InputKey KeyS {.keyId=KeyId::S, .type=DeviceType::Keyboard};

@@ -8,57 +8,68 @@ class AnimatedSprite
 {
 public:
 
+    AnimatedSprite(SpriteSheet* sheet) : sheet(sheet) {}
+
     void play(const Animation& anim)
     {
-        if (&currentAnim == &anim) { return; }
+        if (currentAnim == &anim)
+            return;
 
-        currentAnim = anim;
-
+        currentAnim = &anim;
         currentFrame = 0;
+        accumulator = 0.0f;
+        playing = true;
+    }
 
-        accumulator = 0;
+    void stop()
+    {
+        playing = false;
     }
 
     void update(float dt)
     {
+        if (!playing || !currentAnim) { return; }
+
         accumulator += dt;
 
-        while(accumulator >= currentAnim.frameTime)
+        while (accumulator >= currentAnim->frameTime)
         {
-            accumulator -= currentAnim.frameTime;
-
+            accumulator -= currentAnim->frameTime;
             currentFrame++;
 
-            if(currentFrame >= currentAnim.frames)
+            if (currentFrame >= currentAnim->frames)
             {
-                if(currentAnim.loop)
-                {
+                if (currentAnim->loop)
                     currentFrame = 0;
-                }
                 else
                 {
-                    currentFrame = currentAnim.frames - 1;
+                    currentFrame = currentAnim->frames - 1;
+                    playing = false;
                 }
             }
         }
+        if (sheet) { sheet->getFrame(currentFrame, currentAnim->row); }
     }
 
-    Rect getSourceRect() const
+   /* Rect getSourceRect() const
     {
-        return sheet.getFrame(currentFrame, currentAnim.row);
-    }
+        if (!sheet)
+            return {0,0,0,0};
+
+        //return sheet->getFrame(currentFrame, currentAnim->row);
+    }*/
 
 public:
 
-    SpriteSheet sheet;
+    SpriteSheet* sheet = nullptr;
 
 private:
 
-    Animation currentAnim;
+    const Animation* currentAnim = nullptr;
 
     int currentFrame = 0;
-
-    float accumulator = 0;
+    float accumulator = 0.0f;
+    bool playing = false;
 };
 
 #endif

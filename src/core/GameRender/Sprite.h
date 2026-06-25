@@ -7,11 +7,11 @@ struct Sprite
 {
     int textureId = -1;
 
-    Rect rect;
+    Rect src {0, 0, 0, 0};   
+    Rect dst {0, 0, 0, 0};   
 
     float angle = 0;
-
-    FlipMode flip = FlipMode::NONE;
+    FlipMode flip = FlipMode::NONE;    
 };
 
 #endif
