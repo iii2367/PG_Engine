@@ -78,7 +78,7 @@ float anMov = 200;
 RenderSystem rs(*gfx);
 Sprite Light;
 Light.dst = {800, 200, 400, 400};
-Light.textureId = resMan.loadTexture("image/Light.png");
+Light.textureId = resMan.loadTexture("image/light.png");
 rs.setCamera(camera);
 RenderCommand LightCMD;
 LightCMD.entityId = 1;
