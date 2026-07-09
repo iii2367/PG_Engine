@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         runAnim.loop = true;
         AnimatedSprite anim(&AnimSheet);
         anim.play(runAnim);
-float anMov = 200;
+        float anMov = 200;
         std::atomic<bool> runningRender{true};
         std::atomic<int> fps{0};
         Camera camera;
@@ -75,26 +75,26 @@ float anMov = 200;
         camera.zoom = 1.0f;
         Rect locRect{0,0,0,0};
 
-RenderSystem rs(*gfx);
-Sprite Light;
-Light.dst = {800, 200, 400, 400};
-Light.textureId = resMan.loadTexture("image/light.png");
-rs.setCamera(camera);
-RenderCommand LightCMD;
-LightCMD.entityId = 1;
-LightCMD.layer = RenderLayer::GameObjects;
-LightCMD.type = RenderCommand::Type::Sprite;
-LightCMD.z = 1.0f;
+        RenderSystem rs(*gfx);
+        Sprite Light;
+        Light.dst = {800, 200, 400, 400};
+        Light.textureId = resMan.loadTexture("image/light.png");
+        rs.setCamera(camera);
+        RenderCommand LightCMD;
+        LightCMD.entityId = 1;
+        LightCMD.layer = RenderLayer::GameObjects;
+        LightCMD.type = RenderCommand::Type::Sprite;
+        LightCMD.z = 1.0f;
 
-int txt = gfx->createText(fontId1, "Text test", {0, 0, 0, 0});
-RenderCommand TextCMD;
-TextCMD.entityId = 2;
-TextCMD.layer = RenderLayer::HUD;
-TextCMD.type = RenderCommand::Type::Text;
-TextCMD.z = 1.0f;
-Text textDa;
-textDa.textId = txt;
-textDa.dst = {0,600,0,0};
+        int txt = gfx->createText(fontId1, "Text test", {0, 0, 0, 0});
+        RenderCommand TextCMD;
+        TextCMD.entityId = 2;
+        TextCMD.layer = RenderLayer::HUD;
+        TextCMD.type = RenderCommand::Type::Text;
+        TextCMD.z = 1.0f;
+        Text textDa;
+        textDa.textId = txt;
+        textDa.dst = {0,600,0,0};
 
 
         std::thread renderThread([&] 
